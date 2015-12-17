@@ -2,11 +2,11 @@ class ReceivePullRequestEvent
   include Sidekiq::Worker
 
   def perform(payload)
-    reviewers = payload["pull_request"]["body"].scan(/- \[.\] @(.+)/)
+    reviewers = payload["pull_request"]["body"].scan(/- \[.\] @(.+)/).flatten
     
     number = payload["number"]
 
-    PullRequest.create!(number: number, status: "pending_review")
+    PullRequest.create!(number: number, status: "pending_review", reviewers: reviewers)
 
     pr_sha = payload["pull_request"]["head"]["sha"]
 
