@@ -1,0 +1,6 @@
+language: ruby
+rvm:
+  - 2.2.4
+before_script:
+  - "bin/rake db:create db:test:prepare"
+script: bundle exec rspec
