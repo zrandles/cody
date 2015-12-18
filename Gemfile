@@ -39,6 +39,8 @@ gem 'sidekiq'
 
 gem 'octokit'
 
+gem 'rollbar'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -61,4 +63,8 @@ group :test do
   gem 'shoulda-matchers'
   gem 'webmock'
   gem 'vcr'
+end
+
+group :production do
+  gem 'rails_12factor'
 end
