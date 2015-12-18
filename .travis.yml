@@ -4,3 +4,7 @@ rvm:
 before_script:
   - "bundle exec rake db:create db:test:prepare"
 script: bundle exec rspec
+env:
+  global:
+    - CODY_GITHUB_ACCESS_TOKEN=abc123
+    - CODY_GITHUB_REPO=aergonaut/testrepo
