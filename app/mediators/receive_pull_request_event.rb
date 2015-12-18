@@ -6,7 +6,7 @@ class ReceivePullRequestEvent
     
     number = payload["number"]
 
-    PullRequest.create!(number: number, status: "pending_review", reviewers: reviewers)
+    PullRequest.create!(number: number, status: "pending_review", pending_reviews: reviewers)
 
     pr_sha = payload["pull_request"]["head"]["sha"]
 
