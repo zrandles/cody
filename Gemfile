@@ -44,6 +44,8 @@ group :development, :test do
   gem 'byebug'
 
   gem 'rspec-rails'
+
+  gem 'dotenv'
 end
 
 group :development do

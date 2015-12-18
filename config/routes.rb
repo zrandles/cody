@@ -55,4 +55,5 @@ Rails.application.routes.draw do
   #   end
 
   post "/webhooks/pull_request" => "webhooks#pull_request"
+  post "/webhooks/issue_comment" => "webhooks#issue_comment"
 end

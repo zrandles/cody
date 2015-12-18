@@ -8,4 +8,10 @@ class WebhooksController < ApplicationController
 
     head :accepted
   end
+
+  def issue_comment
+    body = JSON.load(request.body)
+    ReceiveIssueCommentEvent.perform_async(body)
+    head :accepted
+  end
 end

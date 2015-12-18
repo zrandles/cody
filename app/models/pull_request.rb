@@ -7,6 +7,8 @@ class PullRequest < ActiveRecord::Base
 
   before_save :default_pending_and_completed_reviews
 
+  scope :pending_review, -> { where(status: "pending_review") }
+
   private
 
   def default_pending_and_completed_reviews

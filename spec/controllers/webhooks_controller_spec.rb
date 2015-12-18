@@ -29,4 +29,17 @@ RSpec.describe WebhooksController, type: :controller do
       expect(response.status).to be(202)
     end
   end
+
+  describe "POST issue_comment" do
+    let(:payload) { JSON.load(File.open(Rails.root.join("spec", "fixtures", "issue_comment.json"))) }
+
+    it "creates a new ReceiveIssueCommentEvent job" do
+      expect { post :issue_comment, JSON.dump(payload) }.to change(ReceiveIssueCommentEvent.jobs, :size).by(1)
+    end
+
+    it "returns 202 Accepted" do
+      post :issue_comment, JSON.dump(payload)
+      expect(response.status).to be(202)
+    end
+  end
 end
