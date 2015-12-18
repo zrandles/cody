@@ -11,6 +11,12 @@ class WebhooksController < ApplicationController
 
   def issue_comment
     body = JSON.load(request.body)
+
+    if body.key?("zen")
+      head :ok
+      return
+    end
+
     ReceiveIssueCommentEvent.perform_async(body)
     head :accepted
   end
