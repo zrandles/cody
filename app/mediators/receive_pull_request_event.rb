@@ -2,7 +2,7 @@ class ReceivePullRequestEvent
   include Sidekiq::Worker
 
   def perform(payload)
-    reviewers = payload["pull_request"]["body"].scan(/- \[.\] @(.\w+)/).flatten.map(&:strip)
+    reviewers = payload["pull_request"]["body"].scan(/- \[.\] @(\w+)/).flatten.map(&:strip)
     
     number = payload["number"]
 
