@@ -13,9 +13,11 @@ class ReceivePullRequestEvent
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
     github.create_status(
       ENV["CODY_GITHUB_REPO"],
-      pr_sha, "pending",
+      pr_sha,
+      "pending",
       context: "code-review/cody",
-      description: "Not all reviewers have approved. Comment \"LGTM\" to give approval."
+      description: "Not all reviewers have approved. Comment \"LGTM\" to give approval.",
+      target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
     )
   end
 end

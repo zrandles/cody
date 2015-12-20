@@ -29,4 +29,25 @@ class ReceiveIssueCommentEvent
       pr.save!
     end
   end
+
+  # Checks if the given string can be taken as an affirmative review.
+  #
+  # Recognized approval phrases (all case insensitive):
+  #
+  # * "LGTM"
+  # * ":+1:" # the GitHub thumbs-up emoji string
+  # * "Looks good"
+  # * "Looks good to me"
+  #
+  # comment - String to check
+  #
+  # Returns true if the comment is affirmative; false otherwise.
+  def comment_affirmative?(comment)
+    [
+      /^lgtm$/i,
+      /^:\+1:$/,
+      /^:ok:$/,
+      /^looks\s+good(?:\s+to\s+me)?$/i
+    ].any? { |r| comment =~ r }
+  end
 end
