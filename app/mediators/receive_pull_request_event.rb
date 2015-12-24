@@ -13,21 +13,50 @@ class ReceivePullRequestEvent
   end
 
   def on_opened
-    reviewers = @payload["pull_request"]["body"].scan(/- \[.\] @(\w+)/).flatten.map(&:strip)
+    check_box_pairs = @payload["pull_request"]["body"].scan(/- \[([ x])\] @(\w+)/)
+
+    pending_reviews = []
+    completed_reviews = []
+
+    check_box_pairs.each do |pair|
+      if pair[0] == "x"
+        completed_reviews << pair[1].strip
+      else
+        pending_reviews << pair[1].strip
+      end
+    end
     
     number = @payload["number"]
+    status = if pending_reviews.any?
+      "pending_review"
+    else
+      "approved"
+    end
 
-    PullRequest.create!(number: number, status: "pending_review", pending_reviews: reviewers)
+    pr = PullRequest.create!(
+      number: number,
+      status: status,
+      pending_reviews: pending_reviews,
+      completed_reviews: completed_reviews
+    )
 
     pr_sha = @payload["pull_request"]["head"]["sha"]
+
+    commit_status = "pending"
+    description = "Not all reviewers have approved. Comment \"LGTM\" to give approval."
+
+    if pr.status == "approved"
+      commit_status = "success"
+      description = "Code review complete"
+    end
 
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
     github.create_status(
       ENV["CODY_GITHUB_REPO"],
       pr_sha,
-      "pending",
+      commit_status,
       context: "code-review/cody",
-      description: "Not all reviewers have approved. Comment \"LGTM\" to give approval.",
+      description: description,
       target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
     )
   end

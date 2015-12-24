@@ -4,10 +4,15 @@ RSpec.describe ReceivePullRequestEvent do
   let(:payload) do
     from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request.json")))
     from_fixture["action"] = action
+    from_fixture["pull_request"]["body"] = body
     from_fixture
   end
 
   let(:job) { ReceivePullRequestEvent.new }
+
+  let(:body) do
+    "- [ ] @aergonaut\n- [ ] @BrentW\n"
+  end
 
   describe "#perform" do
     before do
@@ -19,6 +24,28 @@ RSpec.describe ReceivePullRequestEvent do
 
       it "creates a new PullRequest" do
         expect { job.perform(payload) }.to change { PullRequest.count }.by(1)
+      end
+
+      context "when some reviewers have already approved" do
+        let(:body) do
+          "- [ ] @aergonaut\n- [x] @BrentW\n"
+        end
+
+        it "puts the ones that have already approved into the completed_reviews array" do
+          job.perform(payload)
+          expect(PullRequest.last.completed_reviews).to contain_exactly("BrentW")
+        end
+      end
+
+      context "when all of the reviewers have already approved" do
+        let(:body) do
+          "- [x] @aergonaut\n- [x] @BrentW\n"
+        end
+
+        it "marks the status as approved" do
+          job.perform(payload)
+          expect(PullRequest.last.status).to eq("approved")
+        end
       end
 
       it "sends a POST request to GitHub" do

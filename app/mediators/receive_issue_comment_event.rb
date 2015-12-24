@@ -11,7 +11,7 @@ class ReceiveIssueCommentEvent
     return unless reviewers.include?(comment_author)
 
     comment = payload["comment"]["body"]
-    return unless comment =~ /^lgtm$/i
+    return unless comment_affirmative?(comment)
 
     reviewers.delete(comment_author)
     pr.pending_reviews = reviewers
