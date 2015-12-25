@@ -17,6 +17,18 @@ called out for review have given their thumbs up on the code before it's merged.
 
 ## Usage
 
+### Requesting review
+
+To request a review, simply open a new PR and include your desired reviewers in
+the form of a [GitHub task list][] in the PR description:
+
+![example-pr](http://cl.ly/e9tF/example-pr.png)
+
+[GitHub task list]: https://github.com/blog/1375%0A-task-lists-in-gfm-issues-pulls-comments
+
+Checking off a box will make sure that reviewer won't need to approve again if
+the reviews list is rebuilt later.
+
 ### Approving a PR
 
 To approve a PR, you must be a reviewer for that PR and you must leave a comment
