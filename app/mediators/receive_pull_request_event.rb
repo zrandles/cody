@@ -15,6 +15,24 @@ class ReceivePullRequestEvent
   def on_opened
     check_box_pairs = @payload["pull_request"]["body"].scan(/- \[([ x])\] @(\w+)/)
 
+    pr_sha = @payload["pull_request"]["head"]["sha"]
+
+    if ENV["CODY_MIN_REVIEWERS_REQUIRED"] && check_box_pairs.count < ENV["CODY_MIN_REVIEWERS_REQUIRED"].to_i
+      min_reviewers = ENV["CODY_MIN_REVIEWERS_REQUIRED"].to_i
+
+      github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+      github.create_status(
+        ENV["CODY_GITHUB_REPO"],
+        pr_sha,
+        "failure",
+        context: "code-review/cody",
+        description: "#{min_reviewers}+ reviewers are required",
+        target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
+      )
+
+      return
+    end
+
     pending_reviews = []
     completed_reviews = []
 
@@ -39,8 +57,6 @@ class ReceivePullRequestEvent
       pending_reviews: pending_reviews,
       completed_reviews: completed_reviews
     )
-
-    pr_sha = @payload["pull_request"]["head"]["sha"]
 
     commit_status = "pending"
     description = "Not all reviewers have approved. Comment \"LGTM\" to give approval."

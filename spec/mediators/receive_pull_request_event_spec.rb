@@ -22,6 +22,27 @@ RSpec.describe ReceivePullRequestEvent do
     context "when the action is \"opened\"" do
       let(:action) { "opened" }
 
+      context "when a minimum number of reviewers is required" do
+        before do
+          allow(ENV).to receive(:[]).and_call_original
+          expect(ENV).to receive(:[]).with("CODY_MIN_REVIEWERS_REQUIRED").and_return(min_reviewers).at_least(:once)
+        end
+
+        context "and the PR does not have enough" do
+          let(:min_reviewers) { "3" }
+
+          it "puts the failure status on the commit" do
+            job.perform(payload)
+            expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/\w+/\w+/statuses/[0-9abcdef]{40})).
+              with { |req| JSON.load(req.body)["state"] == "failure" }
+          end
+
+          it "does not make a new PullRequest record" do
+            expect { job.perform(payload) }.to_not change { PullRequest.count }
+          end
+        end
+      end
+
       it "creates a new PullRequest" do
         expect { job.perform(payload) }.to change { PullRequest.count }.by(1)
       end
