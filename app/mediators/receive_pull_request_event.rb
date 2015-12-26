@@ -6,16 +6,16 @@ class ReceivePullRequestEvent
 
     case @payload["action"]
     when "opened"
-      self.on_opened
+      self.on_opened(@payload["pull_request"])
     when "synchronize"
       self.on_synchronize
     end
   end
 
-  def on_opened
-    check_box_pairs = @payload["pull_request"]["body"].scan(/- \[([ x])\] @(\w+)/)
+  def on_opened(pull_request_json)
+    check_box_pairs = pull_request_json["body"].scan(/- \[([ x])\] @(\w+)/)
 
-    pr_sha = @payload["pull_request"]["head"]["sha"]
+    pr_sha = pull_request_json["head"]["sha"]
 
     if ENV["CODY_MIN_REVIEWERS_REQUIRED"] && check_box_pairs.count < ENV["CODY_MIN_REVIEWERS_REQUIRED"].to_i
       min_reviewers = ENV["CODY_MIN_REVIEWERS_REQUIRED"].to_i
@@ -44,7 +44,7 @@ class ReceivePullRequestEvent
       end
     end
     
-    number = @payload["number"]
+    number = pull_request_json["number"]
     status = if pending_reviews.any?
       "pending_review"
     else
