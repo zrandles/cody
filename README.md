@@ -15,6 +15,11 @@ called out for review have given their thumbs up on the code before it's merged.
 - [ ] Require 1-n reviewers be from a given a list of reviewers
 - [ ] Automatically choose reviewers based on PR characteristics
 
+### Anti-features (Not Doing)
+
+* :x: Web interface of any kind
+* :x: "Approval groups" (i.e. one of Jane _or_ Mary could :+1:).
+
 ## Usage
 
 ### Requesting review
