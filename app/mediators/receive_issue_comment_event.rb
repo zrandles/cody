@@ -125,12 +125,7 @@ class ReceiveIssueCommentEvent
   #
   # Returns true if the comment is affirmative; false otherwise.
   def comment_affirmative?(comment)
-    [
-      /^lgtm$/i,
-      /^:\+1:\s+$/, # if you select the emoji from the autocomplete, it inserts an extra space at the end
-      /^:ok:$/,
-      /^looks\s+good(?:\s+to\s+me)?$/i
-    ].any? { |r| comment =~ r }
+    !!(comment =~ /(^lgtm$)|(^:\+1:\s+$)|(^:ok:\s+$)|(^looks\s+good(?:\s+to\s+me)?$)/i)
   end
 
   def comment_rebuild_reviews?(comment)
