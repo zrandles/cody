@@ -51,7 +51,7 @@ listed reviewers can recalculate the review list.
 To recalculate the review list, leave a comment with the following text:
 
 ```
-!parse-reviews
+!rebuild-reviews
 ```
 
 This will instruct the bot to rebuild the review list based on the task list in
