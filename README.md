@@ -11,7 +11,7 @@ called out for review have given their thumbs up on the code before it's merged.
 - [x] Reviewers give approval by leaving a comment
 - [x] Review progress persists when the head commit of the branch changes
 - [x] Require a minimum number of reviews
-- [ ] Restart reviews on command
+- [x] Rebuild reviews list from PR description on command
 - [ ] Require 1-n reviewers be from a given a list of reviewers
 - [ ] Automatically choose reviewers based on PR characteristics
 
