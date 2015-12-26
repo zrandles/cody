@@ -63,6 +63,17 @@ This will instruct the bot to rebuild the review list based on the task list in
 the PR description. Reviewers that have already checked their box will be pre-approved
 in the new list of reviews.
 
+### Retracting approval
+
+If you previously approved a PR but want to retract your approval, you can do
+the following:
+
+1. Uncheck your check box in the task list in the PR description
+2. Issue the `!rebuild-reviews` command
+
+Cody will rebuild the reviews list from the task list, and count you as
+unapproved because your check box is not checked.
+
 ## License
 
 MIT.
