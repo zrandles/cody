@@ -3,7 +3,6 @@ class ReceiveIssueCommentEvent
 
   def perform(payload)
     @payload = payload
-    return unless PullRequest.exists?(number: @payload["issue"]["number"])
 
     comment = @payload["comment"]["body"]
     if comment_affirmative?(comment)
@@ -14,6 +13,7 @@ class ReceiveIssueCommentEvent
   end
 
   def approval_comment
+    return unless PullRequest.exists?(number: @payload["issue"]["number"])
     pr = PullRequest.pending_review.find_by(number: @payload["issue"]["number"])
     reviewers = pr.pending_reviews
 
@@ -44,7 +44,7 @@ class ReceiveIssueCommentEvent
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
     pull_resource = github.pull_request(ENV["CODY_GITHUB_REPO"], @payload["issue"]["number"])
 
-    pr = PullRequest.find_by(number: @payload["issue"]["number"])
+    pr = PullRequest.find_or_initialize_by(number: @payload["issue"]["number"])
 
     author = pull_resource.user.login
     reviewers = pr.pending_reviews + pr.completed_reviews
