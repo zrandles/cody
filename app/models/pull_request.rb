@@ -5,7 +5,7 @@ class PullRequest < ActiveRecord::Base
   serialize :pending_reviews, JSON
   serialize :completed_reviews, JSON
 
-  before_save :default_pending_and_completed_reviews
+  after_initialize :default_pending_and_completed_reviews
 
   scope :pending_review, -> { where(status: "pending_review") }
 
