@@ -82,6 +82,29 @@ class ReceiveIssueCommentEvent
       end
     end
 
+    all_reviewers = pending_reviews + completed_reviews
+
+    minimum_super_reviewers = Setting.lookup("minimum_super_reviewers")
+    if minimum_super_reviewers.present?
+      super_reviewers = Setting.lookup("super_reviewers")
+
+      included_super_reviewers = all_reviewers.select { |r| super_reviewers.include?(r) }.count
+
+      if included_super_reviewers < minimum_super_reviewers
+        github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+        github.create_status(
+          ENV["CODY_GITHUB_REPO"],
+          pr_sha,
+          "failure",
+          context: "code-review/cody",
+          description: "At least #{minimum_super_reviewers} super-reviewer is required",
+          target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
+        )
+
+        return
+      end
+    end
+
     status = if pending_reviews.any?
       "pending_review"
     else
