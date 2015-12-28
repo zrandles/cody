@@ -12,7 +12,7 @@ called out for review have given their thumbs up on the code before it's merged.
 - [x] Review progress persists when the head commit of the branch changes
 - [x] Require a minimum number of reviews
 - [x] Rebuild reviews list from PR description on command
-- [ ] Require 1-n reviewers be from a given a list of reviewers
+- [x] Require 1-n reviewers be from a given a list of reviewers ("super reviewers")
 - [ ] Automatically choose reviewers based on PR characteristics
 
 ### Anti-features (Not Doing)
@@ -43,6 +43,7 @@ with one of the following affirmative phrases on the PR:
 * Looks good
 * Looks good to me
 * :+1:
+* :ok:
 
 You comment should be on its own line with no other text on the same line. The
 phrases are case-insensitive. You may include other text in your comment, but
@@ -73,6 +74,18 @@ the following:
 
 Cody will rebuild the reviews list from the task list, and count you as
 unapproved because your check box is not checked.
+
+### Using "super reviewers"
+
+Cody has the concept of "super reviewers". These are a list of reviewers that
+you want to ensure sign off on every PR that gets merged.
+
+Cody allows you to configure your list of super reviewers, and also configure
+how many super reviewer approvals you want to require for each PR.
+
+PRs that do not include enough super reviewers in the review list will be marked
+with the failed status until the reviews are rebuilt and enough super reviewers
+are added.
 
 ## License
 
