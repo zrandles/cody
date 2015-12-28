@@ -12,9 +12,10 @@ class Setting < ActiveRecord::Base
     def assign(key, value)
       io = StringIO.new("", "w+")
       Transit::Writer.new(:json, io).write(value)
-      find_or_create_by!(key: key) do |s|
-        s.value = io.string
-      end
+      s = find_or_initialize_by(key: key)
+      s.value = io.string
+      s.save!
+      s
     end
   end
 end

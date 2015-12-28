@@ -11,6 +11,11 @@ RSpec.describe Setting, type: :model do
       setting = Setting.find_by(key: "second_level_reviewers")
       expect(setting.value).to eq("[\"aergonaut\",\"BrentW\"]")
     end
+
+    it "overwrites existing settings" do
+      Setting.assign("foo", [1, 2, 3])
+      expect { Setting.assign("foo", [3, 2, 1]) }.to change { Setting.lookup("foo") }.to([3, 2, 1])
+    end
   end
 
   describe ".lookup" do
