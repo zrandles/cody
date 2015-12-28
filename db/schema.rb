@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151217232458) do
+ActiveRecord::Schema.define(version: 20151227072115) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,5 +24,12 @@ ActiveRecord::Schema.define(version: 20151217232458) do
     t.string   "pending_reviews"
     t.string   "completed_reviews"
   end
+
+  create_table "settings", force: :cascade do |t|
+    t.string "key"
+    t.string "value"
+  end
+
+  add_index "settings", ["key", "value"], name: "index_settings_on_key_and_value", unique: true, using: :btree
 
 end
