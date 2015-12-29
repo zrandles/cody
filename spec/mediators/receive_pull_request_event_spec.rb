@@ -24,12 +24,12 @@ RSpec.describe ReceivePullRequestEvent do
 
       context "when a minimum number of reviewers is required" do
         before do
-          allow(ENV).to receive(:[]).and_call_original
-          expect(ENV).to receive(:[]).with("CODY_MIN_REVIEWERS_REQUIRED").and_return(min_reviewers).at_least(:once)
+          allow(Setting).to receive(:lookup).and_call_original
+          expect(Setting).to receive(:lookup).with("minimum_reviewers_required").and_return(min_reviewers).at_least(:once)
         end
 
         context "and the PR does not have enough" do
-          let(:min_reviewers) { "3" }
+          let(:min_reviewers) { 3 }
 
           it "puts the failure status on the commit" do
             job.perform(payload)

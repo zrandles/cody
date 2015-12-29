@@ -17,16 +17,15 @@ class ReceivePullRequestEvent
 
     pr_sha = pull_request_json["head"]["sha"]
 
-    if ENV["CODY_MIN_REVIEWERS_REQUIRED"] && check_box_pairs.count < ENV["CODY_MIN_REVIEWERS_REQUIRED"].to_i
-      min_reviewers = ENV["CODY_MIN_REVIEWERS_REQUIRED"].to_i
-
+    minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")
+    if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
       github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
       github.create_status(
         ENV["CODY_GITHUB_REPO"],
         pr_sha,
         "failure",
         context: "code-review/cody",
-        description: "#{min_reviewers}+ reviewers are required",
+        description: "APRICOT: Too few reviewers are listed",
         target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
       )
 
@@ -59,7 +58,7 @@ class ReceivePullRequestEvent
           pr_sha,
           "failure",
           context: "code-review/cody",
-          description: "At least #{minimum_super_reviewers} super-reviewer is required",
+          description: "AVOCADO: PR does not meet super-review threshold",
           target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
         )
 
