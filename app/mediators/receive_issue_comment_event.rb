@@ -64,7 +64,7 @@ class ReceiveIssueCommentEvent
         pr_sha,
         "failure",
         context: "code-review/cody",
-        description: "#{min_reviewers}+ reviewers are required",
+        description: "APRICOT: Too few reviewers are listed",
         target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
       )
 
@@ -97,7 +97,7 @@ class ReceiveIssueCommentEvent
           pr_sha,
           "failure",
           context: "code-review/cody",
-          description: "At least #{minimum_super_reviewers} super-reviewer is required",
+          description: "AVOCADO: PR does not meet super-review threshold",
           target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
         )
 
