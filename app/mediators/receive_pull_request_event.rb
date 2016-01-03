@@ -21,7 +21,7 @@ class ReceivePullRequestEvent
     if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
       github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
       github.create_status(
-        ENV["CODY_GITHUB_REPO"],
+        @payload["repository"]["full_name"],
         pr_sha,
         "failure",
         context: "code-review/cody",
@@ -54,7 +54,7 @@ class ReceivePullRequestEvent
       if included_super_reviewers < minimum_super_reviewers
         github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
         github.create_status(
-          ENV["CODY_GITHUB_REPO"],
+          @payload["repository"]["full_name"],
           pr_sha,
           "failure",
           context: "code-review/cody",
@@ -90,7 +90,7 @@ class ReceivePullRequestEvent
 
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
     github.create_status(
-      ENV["CODY_GITHUB_REPO"],
+      @payload["repository"]["full_name"],
       pr_sha,
       commit_status,
       context: "code-review/cody",
@@ -122,7 +122,7 @@ class ReceivePullRequestEvent
 
       github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
       github.create_status(
-        ENV["CODY_GITHUB_REPO"],
+        @payload["repository"]["full_name"],
         pr_sha,
         status,
         context: "code-review/cody",

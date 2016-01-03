@@ -16,7 +16,7 @@ RSpec.describe ReceivePullRequestEvent do
 
   describe "#perform" do
     before do
-      stub_request(:post, %r(https?://api.github.com/repos/\w+/\w+/statuses/[0-9abcdef]{40}))
+      stub_request(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40}))
     end
 
     context "when the action is \"opened\"" do
@@ -33,7 +33,7 @@ RSpec.describe ReceivePullRequestEvent do
 
           it "puts the failure status on the commit" do
             job.perform(payload)
-            expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/\w+/\w+/statuses/[0-9abcdef]{40})).
+            expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
               with { |req| JSON.load(req.body)["state"] == "failure" }
           end
 
@@ -57,7 +57,7 @@ RSpec.describe ReceivePullRequestEvent do
 
           it "puts the failure status on the commit" do
             job.perform(payload)
-            expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/\w+/\w+/statuses/[0-9abcdef]{40})).
+            expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
               with { |req| JSON.load(req.body)["state"] == "failure" }
           end
 
@@ -95,7 +95,7 @@ RSpec.describe ReceivePullRequestEvent do
 
       it "sends a POST request to GitHub" do
         job.perform(payload)
-        expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/\w+/\w+/statuses/[0-9abcdef]{40}))
+        expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40}))
       end
     end
 
@@ -112,7 +112,7 @@ RSpec.describe ReceivePullRequestEvent do
         let(:status) { "pending_review" }
 
         it "sends the pending review comment in the body" do
-          expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/\w+/\w+/statuses/[0-9abcdef]{40})).
+          expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
             with { |req| JSON.load(req.body)["description"] == "Not all reviewers have approved. Comment \"LGTM\" to give approval." }
         end
       end
@@ -121,7 +121,7 @@ RSpec.describe ReceivePullRequestEvent do
         let(:status) { "approved" }
 
         it "sends the review complete comment in the body" do
-          expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/\w+/\w+/statuses/[0-9abcdef]{40})).
+          expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
             with { |req| JSON.load(req.body)["description"] == "Code review complete" }
         end
       end
