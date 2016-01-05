@@ -148,7 +148,7 @@ class ReceiveIssueCommentEvent
   #
   # Returns true if the comment is affirmative; false otherwise.
   def comment_affirmative?(comment)
-    !!(comment =~ /(^lgtm$)|(^:\+1:\s+$)|(^:ok:\s+$)|(^looks\s+good(?:\s+to\s+me)?$)/i)
+    !!(comment =~ /(^lgtm$)|(^:\+1:\s+$)|(^:ok:\s+$)|(^looks\s+good(?:\s+to\s+me)?$)|(^:shipit:\s+$)|(^:rocket:\s+$)|(^:100:\s+$)/i)
   end
 
   def comment_rebuild_reviews?(comment)
