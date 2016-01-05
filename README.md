@@ -46,6 +46,9 @@ with one of the following affirmative phrases on the PR:
 * Looks good to me
 * :+1:
 * :ok:
+* :shipit:
+* :rocket:
+* :100:
 
 You comment should be on its own line with no other text on the same line. The
 phrases are case-insensitive. You may include other text in your comment, but
