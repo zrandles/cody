@@ -13,6 +13,7 @@ class ReceivePullRequestEvent
   end
 
   def on_opened(pull_request_json)
+    pull_request_json["body"] ||= ""
     check_box_pairs = pull_request_json["body"].scan(/- \[([ x])\] @(\w+)/)
 
     pr_sha = pull_request_json["head"]["sha"]
