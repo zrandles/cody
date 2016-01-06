@@ -55,6 +55,9 @@ class ReceiveIssueCommentEvent
 
     check_box_pairs = pull_resource.body.scan(/- \[([ x])\] @(\w+)/)
 
+    # uniqueness by reviewer login
+    check_box_pairs.uniq! { |pair| pair[1] }
+
     minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")
     if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
       github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
