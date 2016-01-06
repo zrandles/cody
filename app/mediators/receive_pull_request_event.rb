@@ -16,6 +16,9 @@ class ReceivePullRequestEvent
     pull_request_json["body"] ||= ""
     check_box_pairs = pull_request_json["body"].scan(/- \[([ x])\] @(\w+)/)
 
+    # uniqueness by reviewer login
+    check_box_pairs.uniq! { |pair| pair[1] }
+
     pr_sha = pull_request_json["head"]["sha"]
 
     minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")

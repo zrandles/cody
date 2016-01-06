@@ -23,6 +23,8 @@ RSpec.describe ReceivePullRequestEvent do
       let(:action) { "opened" }
 
       context "when a minimum number of reviewers is required" do
+        let(:min_reviewers) { 2 }
+
         before do
           allow(Setting).to receive(:lookup).and_call_original
           expect(Setting).to receive(:lookup).with("minimum_reviewers_required").and_return(min_reviewers).at_least(:once)
@@ -39,6 +41,18 @@ RSpec.describe ReceivePullRequestEvent do
 
           it "does not make a new PullRequest record" do
             expect { job.perform(payload) }.to_not change { PullRequest.count }
+          end
+        end
+
+        context "and there aren't enough unique reviewers" do
+          let(:body) do
+            "- [ ] @BrentW\n- [ ] @BrentW\n"
+          end
+
+          it "puts the failure status on the commit" do
+            job.perform(payload)
+            expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
+              with { |req| JSON.load(req.body)["state"] == "failure" }
           end
         end
       end
