@@ -55,9 +55,8 @@ class ReceiveIssueCommentEvent
 
     check_box_pairs = pull_resource.body.scan(/- \[([ x])\] @(\w+)/)
 
-    if ENV["CODY_MIN_REVIEWERS_REQUIRED"] && check_box_pairs.count < ENV["CODY_MIN_REVIEWERS_REQUIRED"].to_i
-      min_reviewers = ENV["CODY_MIN_REVIEWERS_REQUIRED"].to_i
-
+    minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")
+    if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
       github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
       github.create_status(
         ENV["CODY_GITHUB_REPO"],
