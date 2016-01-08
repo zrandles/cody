@@ -53,7 +53,7 @@ class ReceiveIssueCommentEvent
 
     pr_sha = pull_resource.head.sha
 
-    check_box_pairs = pull_resource.body.scan(/- \[([ x])\] @(\w+)/)
+    check_box_pairs = pull_resource.body.scan(/- \[([ x])\] @([A-Za-z0-9_-]+)/)
 
     # uniqueness by reviewer login
     check_box_pairs.uniq! { |pair| pair[1] }

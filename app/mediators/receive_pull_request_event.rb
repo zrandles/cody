@@ -14,7 +14,7 @@ class ReceivePullRequestEvent
 
   def on_opened(pull_request_json)
     pull_request_json["body"] ||= ""
-    check_box_pairs = pull_request_json["body"].scan(/- \[([ x])\] @(\w+)/)
+    check_box_pairs = pull_request_json["body"].scan(/- \[([ x])\] @([A-Za-z0-9_-]+)/)
 
     # uniqueness by reviewer login
     check_box_pairs.uniq! { |pair| pair[1] }
