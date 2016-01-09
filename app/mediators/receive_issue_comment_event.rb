@@ -46,11 +46,6 @@ class ReceiveIssueCommentEvent
 
     pr = PullRequest.find_or_initialize_by(number: @payload["issue"]["number"])
 
-    author = pull_resource.user.login
-    reviewers = pr.pending_reviews + pr.completed_reviews
-    comment_author = @payload["sender"]["login"]
-    return if comment_author != author && !reviewers.include?(comment_author)
-
     pr_sha = pull_resource.head.sha
 
     check_box_pairs = pull_resource.body.scan(/- \[([ x])\] @([A-Za-z0-9_-]+)/)

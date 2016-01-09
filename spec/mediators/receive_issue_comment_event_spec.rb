@@ -83,19 +83,6 @@ RSpec.describe ReceiveIssueCommentEvent do
           expect(pr.pending_reviews).to contain_exactly("aergonaut", "BrentW")
         end
       end
-
-      context "when the commenter is neither the author nor a previous reviewer" do
-        let(:sender) { "mrpasquini" }
-
-        it "does not change anything" do
-          pr.reload
-          expect(pr.pending_reviews).to eq(["aergonaut"])
-        end
-
-        it "makes not GitHub status requests" do
-          expect(WebMock).to_not have_requested(:post, %r(https?://api.github.com/repos/\w+/\w+/statuses/[0-9abcdef]{40}))
-        end
-      end
     end
   end
 end
