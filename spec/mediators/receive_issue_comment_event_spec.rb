@@ -61,6 +61,7 @@ RSpec.describe ReceiveIssueCommentEvent do
 
       let(:pr_response_body) do
         from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pr.json")))
+        from_fixture["number"] = pr.number
         from_fixture["body"] = "- [ ] @aergonaut\n- [ ] @BrentW"
         from_fixture["user"]["login"] = author
         JSON.dump(from_fixture)
