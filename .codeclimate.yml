@@ -5,6 +5,11 @@ engines:
     checks:
       csrf_not_protected_by_raising_exception:
         enabled: false
+  rubocop:
+    enabled: true
+    checks:
+      Rubocop/Metrics/CyclomaticComplexity:
+        enabled: false
   bundler-audit:
     enabled: true
   csslint:

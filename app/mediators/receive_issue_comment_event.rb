@@ -33,7 +33,13 @@ class ReceiveIssueCommentEvent
     pr_sha = pull_resource.head.sha
 
     if pr.pending_reviews.none?
-      github.create_status(ENV["CODY_GITHUB_REPO"], pr_sha, "success", context: "code-review/cody", description: "Code review complete")
+      github.create_status(
+        @payload["repository"]["full_name"],
+        pr_sha,
+        "success",
+        context: "code-review/cody",
+        description: "Code review complete"
+      )
 
       pr.status = "approved"
       pr.save!
@@ -42,94 +48,9 @@ class ReceiveIssueCommentEvent
 
   def rebuild_reviews
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
-    pull_resource = github.pull_request(ENV["CODY_GITHUB_REPO"], @payload["issue"]["number"])
+    pull_request = github.pull_request(@payload["repository"]["full_name"], @payload["issue"]["number"])
 
-    pr = PullRequest.find_or_initialize_by(number: @payload["issue"]["number"])
-
-    pr_sha = pull_resource.head.sha
-
-    check_box_pairs = pull_resource.body.scan(/- \[([ x])\] @([A-Za-z0-9_-]+)/)
-
-    # uniqueness by reviewer login
-    check_box_pairs.uniq! { |pair| pair[1] }
-
-    minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")
-    if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
-      github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
-      github.create_status(
-        ENV["CODY_GITHUB_REPO"],
-        pr_sha,
-        "failure",
-        context: "code-review/cody",
-        description: "APRICOT: Too few reviewers are listed",
-        target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
-      )
-
-      return
-    end
-
-    pending_reviews = []
-    completed_reviews = []
-
-    check_box_pairs.each do |pair|
-      if pair[0] == "x"
-        completed_reviews << pair[1].strip
-      else
-        pending_reviews << pair[1].strip
-      end
-    end
-
-    all_reviewers = pending_reviews + completed_reviews
-
-    minimum_super_reviewers = Setting.lookup("minimum_super_reviewers")
-    if minimum_super_reviewers.present?
-      super_reviewers = Setting.lookup("super_reviewers")
-
-      included_super_reviewers = all_reviewers.select { |r| super_reviewers.include?(r) }.count
-
-      if included_super_reviewers < minimum_super_reviewers
-        github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
-        github.create_status(
-          ENV["CODY_GITHUB_REPO"],
-          pr_sha,
-          "failure",
-          context: "code-review/cody",
-          description: "AVOCADO: PR does not meet super-review threshold",
-          target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
-        )
-
-        return
-      end
-    end
-
-    status = if pending_reviews.any?
-      "pending_review"
-    else
-      "approved"
-    end
-
-    pr.status = status
-    pr.pending_reviews = pending_reviews
-    pr.completed_reviews = completed_reviews
-    pr.save!
-
-    commit_status = "pending"
-    description = "Not all reviewers have approved. Comment \"LGTM\" to give approval."
-
-    if pr.status == "approved"
-      commit_status = "success"
-      description = "Code review complete"
-    end
-
-    github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
-    github.create_status(
-      ENV["CODY_GITHUB_REPO"],
-      pr_sha,
-      commit_status,
-      context: "code-review/cody",
-      description: description,
-      target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
-    )
+    CreateOrUpdatePullRequest.new.perform(pull_request)
   end
 
   # Checks if the given string can be taken as an affirmative review.
@@ -145,7 +66,24 @@ class ReceiveIssueCommentEvent
   #
   # Returns true if the comment is affirmative; false otherwise.
   def comment_affirmative?(comment)
-    !!(comment =~ /(^lgtm$)|(^:\+1:\s+$)|(^:ok:\s+$)|(^looks\s+good(?:\s+to\s+me)?$)|(^:shipit:\s+$)|(^:rocket:\s+$)|(^:100:\s+$)/i)
+    phrases = %w(
+      lgtm
+      looks\s+good(?:\s+to\s+me)?
+    )
+
+    # emojis need some extra processing so we handle them separately
+    emojis = %w(
+      \+1
+      ok
+      shipit
+      rocket
+      100
+    ).map { |e| ":#{e}:\s*" }
+
+    affirmatives = (phrases + emojis).map { |a| "(^#{a}$)" }
+    joined = affirmatives.join("|")
+
+    !!(comment =~ /#{joined}/i)
   end
 
   def comment_rebuild_reviews?(comment)
