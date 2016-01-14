@@ -15,6 +15,7 @@ class ReceiveIssueCommentEvent
   def approval_comment
     return unless PullRequest.exists?(number: @payload["issue"]["number"])
     pr = PullRequest.pending_review.find_by(number: @payload["issue"]["number"])
+    return unless pr.present?
     reviewers = pr.pending_reviews
 
     comment_author = @payload["sender"]["login"]
