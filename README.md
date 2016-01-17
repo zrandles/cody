@@ -80,6 +80,17 @@ the following:
 Cody will rebuild the reviews list from the task list, and count you as
 unapproved because your check box is not checked.
 
+### Controlling what Pull Requests require reviews
+
+#### Using a branch filter
+
+Cody can filter incoming Pull Requests via a branch filter and a filter policy.
+
+The filter is simply a list of branch names. The policy controls whether the
+filter behaves like a whitelist (only require reviews on Pull Requests that
+target the branches in this list), or blacklist (require reviews on all Pull
+Requests except those that target branches in this list).
+
 ### Using "super reviewers"
 
 Cody has the concept of "super reviewers". These are a list of reviewers that
@@ -91,6 +102,35 @@ how many super reviewer approvals you want to require for each PR.
 PRs that do not include enough super reviewers in the review list will be marked
 with the failed status until the reviews are rebuilt and enough super reviewers
 are added.
+
+## Setup
+
+To use Cody in your own team, you should deploy your own instance of the app to
+some server you control. My team uses Cody with Heroku.
+
+### System requirements
+
+* Ruby 2.2.4
+* Postgres
+* Redis
+
+### Configuration
+
+At the moment configuration is handled through the Rails console using the
+`Setting` model. I may change this in the future if configuration becomes more
+complex.
+
+Consult the table below for a list of relevant settings and their function:
+
+Key | Description | Example
+----|-------------|--------
+`minimum_reviewers_required` | *Fixnum*. The minimum number of reviewers required on every Pull Request. | `Setting.assign "minimum_reviewers_required", 2`
+`super_reviewers` | *Array*. The list of GitHub users that are super reviewers. | `Setting.assign "super_reviewers", ["aergonaut", "BrentW"]`
+`minimum_super_reviewers` | *Fixnum*. The minimum number of super reviewers required on every Pull Request. | `Setting.assign "minimum_super_reviewers", 1`
+`branch_filter` | *Array*. A list of branches to filter incoming Pull Requests by merge base. | `Setting.assign "branch_filter", ["experimental"]`
+`branch_filter_policy` | *Symbol*. Either `:blacklist` or `:whitelist`. Controls the behavior of the branch filter. | `Setting.assign "branch_filter_policy", :blacklist`
+
+To set these configuration values, use the Rails console.
 
 ## License
 
