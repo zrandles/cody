@@ -138,6 +138,7 @@ Key | Description | Example
 `minimum_super_reviewers` | *Fixnum*. The minimum number of super reviewers required on every Pull Request. | `Setting.assign "minimum_super_reviewers", 1`
 `branch_filter` | *Array*. A list of branches to filter incoming Pull Requests by merge base. | `Setting.assign "branch_filter", ["experimental"]`
 `branch_filter_policy` | *Symbol*. Either `:blacklist` or `:whitelist`. Controls the behavior of the branch filter. | `Setting.assign "branch_filter_policy", :blacklist`
+`status_target_url` | *String*. The URL to link to in the GitHub commit status. | `Setting.assign "status_target_url", "https://yourteam.com/wiki/code-review-policies"`
 
 To set these configuration values, use the Rails console.
 

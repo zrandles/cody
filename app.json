@@ -8,5 +8,11 @@
   ],
   "scripts": {
     "postdeploy": "bundle exec rake db:schema:load"
+  },
+  "env": {
+    "CODY_GITHUB_ACCESS_TOKEN": {
+      "description": "A GitHub personal access token used for setting commit statuses and access Pull Request data.",
+      "required": true
+    }
   }
 }

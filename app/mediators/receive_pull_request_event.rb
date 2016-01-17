@@ -44,7 +44,7 @@ class ReceivePullRequestEvent
         status,
         context: "code-review/cody",
         description: description,
-        target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
+        target_url: Setting.lookup("status_target_url")
       )
     end
   end

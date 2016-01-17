@@ -22,7 +22,7 @@ class CreateOrUpdatePullRequest
         "failure",
         context: "code-review/cody",
         description: "APRICOT: Too few reviewers are listed",
-        target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
+        target_url: Setting.lookup("status_target_url")
       )
 
       return
@@ -55,7 +55,7 @@ class CreateOrUpdatePullRequest
           "failure",
           context: "code-review/cody",
           description: "AVOCADO: PR does not meet super-review threshold",
-          target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
+          target_url: Setting.lookup("status_target_url")
         )
 
         return
@@ -88,7 +88,7 @@ class CreateOrUpdatePullRequest
       commit_status,
       context: "code-review/cody",
       description: description,
-      target_url: ENV["CODY_GITHUB_STATUS_TARGET_URL"]
+      target_url: Setting.lookup("status_target_url")
     )
   end
 end
