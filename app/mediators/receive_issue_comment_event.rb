@@ -13,9 +13,8 @@ class ReceiveIssueCommentEvent
   end
 
   def approval_comment
-    return unless PullRequest.exists?(number: @payload["issue"]["number"])
+    return unless PullRequest.pending_review.exists?(number: @payload["issue"]["number"])
     pr = PullRequest.pending_review.find_by(number: @payload["issue"]["number"])
-    return unless pr.present?
     reviewers = pr.pending_reviews
 
     comment_author = @payload["sender"]["login"]
@@ -30,7 +29,7 @@ class ReceiveIssueCommentEvent
     pr.save!
 
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
-    pull_resource = github.pull_request(ENV["CODY_GITHUB_REPO"], @payload["issue"]["number"])
+    pull_resource = github.pull_request(@payload["repository"]["full_name"], @payload["issue"]["number"])
     pr_sha = pull_resource.head.sha
 
     if pr.pending_reviews.none?

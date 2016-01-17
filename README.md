@@ -108,7 +108,16 @@ are added.
 To use Cody in your own team, you should deploy your own instance of the app to
 some server you control. My team uses Cody with Heroku.
 
-### System requirements
+### Heroku Deployment
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+If you use Heroku, you can use the above button to quickly deploy the app to
+your Heroku account.
+
+See the **Configuration** section below for information on how to setup Cody.
+
+### DIY
 
 * Ruby 2.2.4
 * Postgres
@@ -131,6 +140,20 @@ Key | Description | Example
 `branch_filter_policy` | *Symbol*. Either `:blacklist` or `:whitelist`. Controls the behavior of the branch filter. | `Setting.assign "branch_filter_policy", :blacklist`
 
 To set these configuration values, use the Rails console.
+
+### Webhooks
+
+Cody works by receiving GitHub webhooks triggered by events in your repository.
+
+Configure the following webhooks in the repositories you want to use with Cody:
+
+#### Pull Request
+
+![Pull Request webhook configuration](http://cl.ly/ekoQ/pull_request_webhook.png)
+
+#### Issue comment
+
+![Issue comment webhook configuration](http://cl.ly/em7e/issue_comment_webhook.png)
 
 ## License
 
