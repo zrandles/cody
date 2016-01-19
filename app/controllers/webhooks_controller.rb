@@ -4,7 +4,7 @@ class WebhooksController < ApplicationController
 
     senders_filter = Setting.lookup("senders_filter")
     if senders_filter.present?
-      policy = ExculsionPolicy.new(senders_filter, Setting.lookup("senders_filter_policy"))
+      policy = ExclusionPolicy.new(senders_filter, Setting.lookup("senders_filter_policy"))
       unless policy.permitted?(body["sender"]["login"])
         head :ok
         return
