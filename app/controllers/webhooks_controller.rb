@@ -2,10 +2,13 @@ class WebhooksController < ApplicationController
   def pull_request
     body = JSON.load(request.body)
 
-    senders_whitelist = Setting.lookup("senders_whitelist")
-    if senders_whitelist.present? && !senders_whitelist.include?(body["sender"]["login"])
-      head :ok
-      return
+    senders_filter = Setting.lookup("senders_filter")
+    if senders_filter.present?
+      policy = ExculsionPolicy.new(senders_filter, Setting.lookup("senders_filter_policy"))
+      unless policy.permitted?(body["sender"]["login"])
+        head :ok
+        return
+      end
     end
 
     branch_filter = Setting.lookup("branch_filter")
