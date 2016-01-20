@@ -78,9 +78,9 @@ class ReceiveIssueCommentEvent
       shipit
       rocket
       100
-    ).map { |e| ":#{e}:\s*" }
+    ).map { |e| ":#{e}:" }
 
-    affirmatives = (phrases + emojis).map { |a| "(^#{a}$)" }
+    affirmatives = (phrases + emojis).map { |a| "(^\\s*#{a}\\s*$)" }
     joined = affirmatives.join("|")
 
     !!(comment =~ /#{joined}/i)

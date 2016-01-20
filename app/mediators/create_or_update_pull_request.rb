@@ -8,7 +8,7 @@ class CreateOrUpdatePullRequest
     pr_sha = pull_request["head"]["sha"]
 
     body = pull_request["body"] || ""
-    check_box_pairs = body.scan(/- \[([ x])\] +@([A-Za-z0-9_-]+)/)
+    check_box_pairs = body.scan(/[*-] +\[([ x])\] +@([A-Za-z0-9_-]+)/)
 
     # uniqueness by reviewer login
     check_box_pairs.uniq! { |pair| pair[1] }
