@@ -38,7 +38,7 @@ RSpec.describe ReceiveIssueCommentEvent do
           it "moves them into the completed_reviews list" do
             pr.reload
             expect(pr.pending_reviews).to_not include(reviewer)
-            expect(pr.completed_reviews).to include(reviewer)
+            expect(pr.completed_reviews).to include(sender)
           end
 
           context "and they are the last approver" do
@@ -48,6 +48,16 @@ RSpec.describe ReceiveIssueCommentEvent do
 
             it "marks the PR as approved" do
               expect(pr.reload.status).to eq("approved")
+            end
+          end
+
+          context "but their username has different capitalization than what we recorded in the reviews list" do
+            let(:sender) { "AeRgOnAuT" }
+
+            it "moves them into the completed_reviews list" do
+              pr.reload
+              expect(pr.pending_reviews).to_not include(reviewer)
+              expect(pr.completed_reviews).to include(sender)
             end
           end
         end

@@ -15,15 +15,15 @@ class ReceiveIssueCommentEvent
   def approval_comment
     return unless PullRequest.pending_review.exists?(number: @payload["issue"]["number"])
     pr = PullRequest.pending_review.find_by(number: @payload["issue"]["number"])
-    reviewers = pr.pending_reviews
+    reviewers = pr.pending_reviews.map(&:downcase)
 
     comment_author = @payload["sender"]["login"]
-    return unless reviewers.include?(comment_author)
+    return unless reviewers.include?(comment_author.downcase)
 
     comment = @payload["comment"]["body"]
     return unless comment_affirmative?(comment)
 
-    reviewers.delete(comment_author)
+    reviewers.delete_if { |login| login.downcase == comment_author.downcase }
     pr.pending_reviews = reviewers
     pr.completed_reviews << comment_author
     pr.save!
