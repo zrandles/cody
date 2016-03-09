@@ -116,27 +116,36 @@ RSpec.describe ReceivePullRequestEvent do
     context "when the action is \"synchronize\"" do
       let(:action) { "synchronize" }
 
-      let!(:pr) { FactoryGirl.create :pull_request, number: payload["number"], status: status }
+      context "and we have recorded the PR" do
+        let!(:pr) { FactoryGirl.create :pull_request, number: payload["number"], status: status }
 
-      before do
-        job.perform(payload)
-      end
+        before do
+          job.perform(payload)
+        end
 
-      context "and the PR is pending" do
-        let(:status) { "pending_review" }
+        context "and the PR is pending" do
+          let(:status) { "pending_review" }
 
-        it "sends the pending review comment in the body" do
-          expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
-            with { |req| JSON.load(req.body)["description"] == "Not all reviewers have approved. Comment \"LGTM\" to give approval." }
+          it "sends the pending review comment in the body" do
+            expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
+              with { |req| JSON.load(req.body)["description"] == "Not all reviewers have approved. Comment \"LGTM\" to give approval." }
+          end
+        end
+
+        context "and the PR is approved" do
+          let(:status) { "approved" }
+
+          it "sends the review complete comment in the body" do
+            expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
+              with { |req| JSON.load(req.body)["description"] == "Code review complete" }
+          end
         end
       end
 
-      context "and the PR is approved" do
-        let(:status) { "approved" }
-
-        it "sends the review complete comment in the body" do
-          expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
-            with { |req| JSON.load(req.body)["description"] == "Code review complete" }
+      context "and we haven't yet recorded the PR" do
+        it "delegates to CreateOrUpdatePullRequest" do
+          expect(CreateOrUpdatePullRequest).to receive(:new).and_call_original
+          job.perform(payload)
         end
       end
     end

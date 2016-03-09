@@ -46,6 +46,8 @@ class ReceivePullRequestEvent
         description: description,
         target_url: Setting.lookup("status_target_url")
       )
+    else
+      CreateOrUpdatePullRequest.new.perform(@payload["pull_request"])
     end
   end
 end
