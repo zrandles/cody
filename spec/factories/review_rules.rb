@@ -1,4 +1,8 @@
 FactoryGirl.define do
-  factory :review_rule
-  factory :review_rule_file_match
+  factory :review_rule do
+    sequence(:name) { |x| "Review Rule #{x}" }
+
+    factory :review_rule_file_match, class: ReviewRuleFileMatch
+    factory :review_rule_always, class: ReviewRuleAlways
+  end
 end
