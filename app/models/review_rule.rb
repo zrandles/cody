@@ -1,0 +1,46 @@
+class ReviewRule < ActiveRecord::Base
+  validates :name, presence: true
+  validates :reviewer, presence: true
+
+  def apply(pull_request_hash)
+    if matches?(pull_request_hash)
+      add_reviewer(PullRequest.find_by(number: pull_request_hash["number"]))
+    end
+  end
+
+  def matches?(*)
+    # by default nothing matches
+    false
+  end
+
+  # Add the reviewer according to the rule's configuration
+  #
+  # pull_request - The PullRequest object to add a reviewer to
+  #
+  # Returns the login of the reviewer that was successfully added,
+  # false otherwise
+  def add_reviewer(pull_request)
+    reviewers_for_picking = possible_reviewers
+
+    reviewer_to_add = reviewers_for_picking.shuffle.detect { |r| !pull_request.pending_reviews.include?(r) }
+    return false if reviewer_to_add.nil?
+
+    pull_request.pending_reviews << reviewer_to_add
+    pull_request.save
+    reviewer_to_add
+  end
+
+  # List the possible reviewers according to this rule's configuration
+  #
+  # Returns the Array listing all the possible reviewers
+  def possible_reviewers
+    if self.reviewer =~ /^\d+$/
+      github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+      team_members = github.team_members(self.reviewer)
+      team_members.map(&:login)
+    else
+      # it's just a single user
+      Array(self.reviewer)
+    end
+  end
+end
