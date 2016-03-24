@@ -19,7 +19,8 @@ RSpec.describe ReviewRule, type: :model do
       end
 
       it "returns the list of team member logins" do
-        expected_team_members = %w(aergonaut BrentW farrspace deepthisunder yatish27 h4hardikonly mityaz mpukas nazarik vovka torumori offtop)
+        expected_team_members = %w(aergonaut BrentW farrspace deepthisunder
+          yatish27 h4hardikonly mityaz mpukas nazarik vovka torumori offtop)
         expect(rule.possible_reviewers).to contain_exactly(*expected_team_members)
       end
     end
@@ -48,7 +49,8 @@ RSpec.describe ReviewRule, type: :model do
       end
 
       it "adds the reviewer to the pending reviews" do
-        expect { rule.add_reviewer(pr) }.to change { pr.pending_reviews }.from(["aergonaut"]).to(["aergonaut", "BrentW"])
+        expect { rule.add_reviewer(pr) }.to change { pr.pending_reviews }
+          .from(["aergonaut"]).to(["aergonaut", "BrentW"])
       end
     end
 
