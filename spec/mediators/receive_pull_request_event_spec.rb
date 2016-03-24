@@ -81,35 +81,43 @@ RSpec.describe ReceivePullRequestEvent do
         end
       end
 
-      it "creates a new PullRequest" do
-        expect { job.perform(payload) }.to change { PullRequest.count }.by(1)
-      end
-
-      context "when some reviewers have already approved" do
-        let(:body) do
-          "- [ ] @aergonaut\n- [x] @BrentW\n"
+      context "when no fatal errors are raised" do
+        before do
+          apply_rules = instance_double(ApplyReviewRules)
+          expect(apply_rules).to receive(:perform)
+          expect(ApplyReviewRules).to receive(:new).and_return(apply_rules)
         end
 
-        it "puts the ones that have already approved into the completed_reviews array" do
+        it "creates a new PullRequest" do
+          expect { job.perform(payload) }.to change { PullRequest.count }.by(1)
+        end
+
+        context "when some reviewers have already approved" do
+          let(:body) do
+            "- [ ] @aergonaut\n- [x] @BrentW\n"
+          end
+
+          it "puts the ones that have already approved into the completed_reviews array" do
+            job.perform(payload)
+            expect(PullRequest.last.completed_reviews).to contain_exactly("BrentW")
+          end
+        end
+
+        context "when all of the reviewers have already approved" do
+          let(:body) do
+            "- [x] @aergonaut\n- [x] @BrentW\n"
+          end
+
+          it "marks the status as approved" do
+            job.perform(payload)
+            expect(PullRequest.last.status).to eq("approved")
+          end
+        end
+
+        it "sends a POST request to GitHub" do
           job.perform(payload)
-          expect(PullRequest.last.completed_reviews).to contain_exactly("BrentW")
+          expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40}))
         end
-      end
-
-      context "when all of the reviewers have already approved" do
-        let(:body) do
-          "- [x] @aergonaut\n- [x] @BrentW\n"
-        end
-
-        it "marks the status as approved" do
-          job.perform(payload)
-          expect(PullRequest.last.status).to eq("approved")
-        end
-      end
-
-      it "sends a POST request to GitHub" do
-        job.perform(payload)
-        expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40}))
       end
     end
 

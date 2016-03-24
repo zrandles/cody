@@ -77,6 +77,10 @@ RSpec.describe ReceiveIssueCommentEvent do
         JSON.dump(from_fixture)
       end
 
+      before do
+        expect(ApplyReviewRules).to_not receive(:new)
+      end
+
       context "when the commenter is the PR author" do
         let(:sender) { author }
 

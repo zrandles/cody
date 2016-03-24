@@ -50,7 +50,7 @@ class ReceiveIssueCommentEvent
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
     pull_request = github.pull_request(@payload["repository"]["full_name"], @payload["issue"]["number"])
 
-    CreateOrUpdatePullRequest.new.perform(pull_request)
+    CreateOrUpdatePullRequest.new.perform(pull_request, skip_review_rules: true)
   end
 
   # Checks if the given string can be taken as an affirmative review.

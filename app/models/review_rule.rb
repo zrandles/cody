@@ -2,12 +2,21 @@ class ReviewRule < ActiveRecord::Base
   validates :name, presence: true
   validates :reviewer, presence: true
 
+  # Apply this rule to the given Pull Request
+  #
+  # Returns the reviewer that was added, if the rule matches and a reviewer was
+  # successfully added; otherwise returns falsey (nil or false).
   def apply(pull_request_hash)
     if matches?(pull_request_hash)
       add_reviewer(PullRequest.find_by(number: pull_request_hash["number"]))
     end
   end
 
+  # Determine if this rule matches the received Pull Request
+  #
+  # pull_request_hash - Hash-like resource from the GitHub API
+  #
+  # Returns true if the rule matches the received resource, false otherwise
   def matches?(*)
     # by default nothing matches
     false
