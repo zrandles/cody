@@ -15,7 +15,7 @@ called out for review have given their thumbs up on the code before it's merged.
 - [x] Require a minimum number of reviews
 - [x] Rebuild reviews list from PR description on command
 - [x] Require 1-n reviewers be from a given a list of reviewers ("super reviewers")
-- [ ] Automatically choose reviewers based on PR characteristics
+- [x] Automatically choose reviewers based on PR characteristics
 
 ### Anti-features (Not Doing)
 
