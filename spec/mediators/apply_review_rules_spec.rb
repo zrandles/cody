@@ -25,32 +25,46 @@ RSpec.describe ApplyReviewRules do
     
     let(:all_rules) { [rule1, rule2] }
 
-    before do
-      expect(rule1).to receive(:apply).and_return("aergonaut")
-      expect(rule1).to receive(:name).and_return("Foobar Review")
+    context "and some rules match" do
+      before do
+        expect(rule1).to receive(:apply).and_return("aergonaut")
+        expect(rule1).to receive(:name).and_return("Foobar Review")
 
-      expect(rule2).to receive(:apply).and_return(nil)
-    end
+        expect(rule2).to receive(:apply).and_return(nil)
+      end
 
-    it "updates the PR body with the generated reviewers" do
-      job.perform(pull_request_hash)
-      expect(WebMock).to have_requested(
-        :patch, "https://api.github.com/repos/aergonaut/testrepo/pulls/42"
-      ).with { |request|
-        updated_body = JSON.load(request.body)["body"]
+      it "updates the PR body with the generated reviewers" do
+        job.perform(pull_request_hash)
+        expect(WebMock).to have_requested(
+          :patch, "https://api.github.com/repos/aergonaut/testrepo/pulls/42"
+        ).with { |request|
+          updated_body = JSON.load(request.body)["body"]
 
-        expected_addendum = <<-EOF
+          expected_addendum = <<-EOF
 ## Generated Reviewers
 
 - [ ] @aergonaut (Foobar Review)
 EOF
 
-        updated_body == pull_request_hash["body"] + "\n\n" + expected_addendum
-      }
+          updated_body == pull_request_hash["body"] + "\n\n" + expected_addendum
+        }
+      end
+    end
+
+    context "and no rules match" do
+      before do
+        expect(rule1).to receive(:apply).and_return(nil)
+        expect(rule2).to receive(:apply).and_return(nil)
+      end
+
+      it "makes no requests to the GitHub API" do
+        job.perform(pull_request_hash)
+        expect(WebMock).to_not have_requested(:any, %r{https?://api.github.com/.*})
+      end
     end
   end
 
-  context "when there are now review rules" do
+  context "when there are no review rules" do
     let(:all_rules) { [] }
 
     it "makes no requests to the GitHub API" do

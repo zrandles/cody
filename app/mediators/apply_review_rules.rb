@@ -1,7 +1,7 @@
 class ApplyReviewRules
   def perform(pull_request_hash)
     rules = ReviewRule.all
-    # byebug
+
     return if rules.empty?
 
     added_reviewers = []
@@ -12,6 +12,8 @@ class ApplyReviewRules
         added_reviewers << [added_reviewer, rule.name]
       end
     end
+
+    return if added_reviewers.empty?
 
     addendum = <<-EOF
 ## Generated Reviewers

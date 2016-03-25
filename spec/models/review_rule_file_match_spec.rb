@@ -48,7 +48,7 @@ RSpec.describe ReviewRuleFileMatch, type: :model do
     context "when none of the filenames match" do
       let(:filename) { "README.md" }
 
-      it "returns true" do
+      it "returns false" do
         expect(rule.matches?(pull_request_hash)).to be_falsey
       end
     end
