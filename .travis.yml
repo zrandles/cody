@@ -8,3 +8,6 @@ env:
   global:
     - CODY_GITHUB_ACCESS_TOKEN=abc123
     - CODY_GITHUB_REPO=aergonaut/testrepo
+branches:
+  only:
+    - master
