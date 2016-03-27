@@ -15,10 +15,10 @@ class ReceiveIssueCommentEvent
   def approval_comment
     return unless PullRequest.pending_review.exists?(number: @payload["issue"]["number"])
     pr = PullRequest.pending_review.find_by(number: @payload["issue"]["number"])
-    reviewers = pr.pending_reviews.map(&:downcase)
+    reviewers = pr.pending_reviews
 
     comment_author = @payload["sender"]["login"]
-    return unless reviewers.include?(comment_author.downcase)
+    return unless reviewers.map(&:downcase).include?(comment_author.downcase)
 
     comment = @payload["comment"]["body"]
     return unless comment_affirmative?(comment)

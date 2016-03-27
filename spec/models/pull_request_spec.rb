@@ -18,4 +18,12 @@ RSpec.describe PullRequest, type: :model do
     it { is_expected.to include(pending_review_pr) }
     it { is_expected.to_not include(approved_pr) }
   end
+
+  let(:pr) { build :pull_request }
+
+  it "only stores unique reviewers in pending reviews" do
+    pr.pending_reviews = %w(aergonaut aergonaut BrentW)
+    pr.save
+    expect(pr.reload.pending_reviews).to contain_exactly("aergonaut", "BrentW")
+  end
 end

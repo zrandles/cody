@@ -3,7 +3,9 @@ require 'rails_helper'
 RSpec.describe ReceiveIssueCommentEvent do
   let(:reviewer) { "aergonaut" }
 
-  let!(:pr) { FactoryGirl.create :pull_request, status: "pending_review", pending_reviews: [reviewer] }
+  let(:pending_reviews) { [reviewer] }
+
+  let!(:pr) { FactoryGirl.create :pull_request, status: "pending_review", pending_reviews: pending_reviews }
 
   let(:payload) do
     from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "issue_comment.json")))

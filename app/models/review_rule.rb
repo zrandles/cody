@@ -26,13 +26,17 @@ class ReviewRule < ActiveRecord::Base
   #
   # pull_request - The PullRequest object to add a reviewer to
   #
-  # Returns the login of the reviewer that was successfully added,
-  # false otherwise
+  # Returns the login of the reviewer that was added
   def add_reviewer(pull_request)
     reviewers_for_picking = possible_reviewers
 
     reviewer_to_add = reviewers_for_picking.shuffle.detect { |r| !pull_request.pending_reviews.include?(r) }
-    return false if reviewer_to_add.nil?
+    if reviewer_to_add.nil?
+      # If we failed to choose a reviewer, that means that all of the possible
+      # reviewers were already on the list. However since this rule did match
+      # we should still add someone, even if they are a duplicate.
+      reviewer_to_add = reviewers_for_picking.first
+    end
 
     pull_request.pending_reviews << reviewer_to_add
     pull_request.save

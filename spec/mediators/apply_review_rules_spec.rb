@@ -51,6 +51,34 @@ EOF
       end
     end
 
+    context "and multiple rules added the same reviewer" do
+      before do
+        expect(rule1).to receive(:apply).and_return("aergonaut")
+        expect(rule1).to receive(:name).and_return("Foobar Review 1")
+
+        expect(rule2).to receive(:apply).and_return("aergonaut")
+        expect(rule2).to receive(:name).and_return("Foobar Review 2")
+      end
+
+      it "names the reviewer twice in the addendum" do
+        job.perform(pull_request_hash)
+        expect(WebMock).to have_requested(
+          :patch, "https://api.github.com/repos/aergonaut/testrepo/pulls/42"
+        ).with { |request|
+          updated_body = JSON.load(request.body)["body"]
+
+          expected_addendum = <<-EOF
+## Generated Reviewers
+
+- [ ] @aergonaut (Foobar Review 1)
+- [ ] @aergonaut (Foobar Review 2)
+EOF
+
+          updated_body == pull_request_hash["body"] + "\n\n" + expected_addendum
+        }
+      end
+    end
+
     context "and no rules match" do
       before do
         expect(rule1).to receive(:apply).and_return(nil)

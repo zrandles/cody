@@ -7,6 +7,8 @@ class PullRequest < ActiveRecord::Base
 
   after_initialize :default_pending_and_completed_reviews
 
+  before_save :remove_duplicate_reviewers
+
   scope :pending_review, -> { where(status: "pending_review") }
 
   private
@@ -19,5 +21,10 @@ class PullRequest < ActiveRecord::Base
     if self.completed_reviews.nil?
       self.completed_reviews = []
     end
+  end
+
+  def remove_duplicate_reviewers
+    reviewers = self.pending_reviews.uniq
+    self.pending_reviews = reviewers
   end
 end

@@ -59,8 +59,8 @@ RSpec.describe ReviewRule, type: :model do
 
       let(:pending_reviews) { ["aergonaut"] }
 
-      it "returns false" do
-        expect(rule.add_reviewer(pr)).to be_falsey
+      it "returns the reviewer" do
+        expect(rule.add_reviewer(pr)).to eq("aergonaut")
       end
 
       it "does not change pending reviews" do
