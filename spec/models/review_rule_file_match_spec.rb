@@ -16,8 +16,10 @@ RSpec.describe ReviewRuleFileMatch, type: :model do
     let(:pull_request_hash) do
       {
         "number" => "42",
-        "repository" => {
-          "full_name" => "aergonaut/testrepo"
+        "base" => {
+          "repo" => {
+            "full_name" => "aergonaut/testrepo"
+          }
         }
       }
     end
