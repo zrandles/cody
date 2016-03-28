@@ -4,8 +4,10 @@ RSpec.describe ApplyReviewRules do
   let(:pull_request_hash) do
     {
       "number" => 42,
-      "repository" => {
-        "full_name" => "aergonaut/testrepo"
+      "base" => {
+        "repo" => {
+          "full_name" => "aergonaut/testrepo"
+        },
       },
       "body" => "Lorem ipsum\n"
     }

@@ -64,9 +64,17 @@ class CreateOrUpdatePullRequest
       end
     end
 
+    pr.status = "pending_review"
+    pr.pending_reviews = pending_reviews
+    pr.completed_reviews = completed_reviews
+    pr.save!
+
     unless options[:skip_review_rules]
       ApplyReviewRules.new.perform(pull_request)
     end
+
+    pr.reload
+    pending_reviews = pr.pending_reviews
 
     status = if pending_reviews.any?
       "pending_review"
@@ -75,8 +83,6 @@ class CreateOrUpdatePullRequest
     end
 
     pr.status = status
-    pr.pending_reviews = pending_reviews
-    pr.completed_reviews = completed_reviews
     pr.save!
 
     commit_status = "pending"

@@ -30,7 +30,7 @@ EOF
 
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
     github.update_pull_request(
-      pull_request_hash["repository"]["full_name"],
+      pull_request_hash["base"]["repo"]["full_name"],
       pull_request_hash["number"],
       body: new_body
     )
