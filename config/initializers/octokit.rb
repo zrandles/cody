@@ -3,7 +3,7 @@ stack = Faraday::RackBuilder.new do |builder|
   builder.use Octokit::Middleware::FollowRedirects
   builder.use Octokit::Response::RaiseError
   builder.use Octokit::Response::FeedParser
-  builder.use Faraday::HttpCache, store: Rails.cache, logger: Rails.logger
+  builder.use Faraday::HttpCache, store: Rails.cache, logger: Rails.logger, shared_cache: false
   builder.adapter Faraday.default_adapter
 end
 Octokit.middleware = stack
