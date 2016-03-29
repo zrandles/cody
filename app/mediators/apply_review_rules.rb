@@ -34,5 +34,12 @@ EOF
       pull_request_hash["number"],
       body: new_body
     )
+
+    labels = added_reviewers.map(&:second)
+    github.add_labels_to_an_issue(
+      pull_request_hash["base"]["repo"]["full_name"],
+      pull_request_hash["number"],
+      labels
+    )
   end
 end
