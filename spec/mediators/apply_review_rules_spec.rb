@@ -19,6 +19,7 @@ RSpec.describe ApplyReviewRules do
     expect(ReviewRule).to receive(:all).and_return(all_rules)
 
     stub_request(:patch, "https://api.github.com/repos/aergonaut/testrepo/pulls/42")
+    stub_request(:post, "https://api.github.com/repos/aergonaut/testrepo/issues/42/labels")
   end
 
   context "when there are rules to apply" do
@@ -49,6 +50,16 @@ RSpec.describe ApplyReviewRules do
 EOF
 
           updated_body == pull_request_hash["body"] + "\n\n" + expected_addendum
+        }
+      end
+
+      it "adds labels to the PR" do
+        job.perform(pull_request_hash)
+        expect(WebMock).to have_requested(
+          :post, "https://api.github.com/repos/aergonaut/testrepo/issues/42/labels"
+        ).with { |request|
+          labels = JSON.load(request.body)
+          labels == ["Foobar Review"]
         }
       end
     end
