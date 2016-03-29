@@ -103,6 +103,19 @@ PRs that do not include enough super reviewers in the review list will be marked
 with the failed status until the reviews are rebuilt and enough super reviewers
 are added.
 
+### Review Rules
+
+Review rules allow Cody to automatically assign reviewers to incoming PRs based
+on criteria you define.
+
+Cody supports the following types of rules:
+
+* Matching the paths of changed files against a regular expression
+
+When a rule matches, you can configure Cody either to assign a specific reviewer
+or to choose a reviewer from a given GitHub Team. If you use a Team, Cody will
+randomly pick a reviewer from the Team members.
+
 ## Setup
 
 To use Cody in your own team, you should deploy your own instance of the app to
