@@ -54,22 +54,7 @@ You comment should be on its own line with no other text on the same line. The
 phrases are case-insensitive. You may include other text in your comment, but
 the affirmative phrase should be on its own line.
 
-### Recalculating reviews
-
-If the list of reviewers changes, either the PR author or any of the previously
-listed reviewers can recalculate the review list.
-
-To recalculate the review list, leave a comment with the following text:
-
-```
-!rebuild-reviews
-```
-
-This will instruct the bot to rebuild the review list based on the task list in
-the PR description. Reviewers that have already checked their box will be pre-approved
-in the new list of reviews.
-
-### Retracting approval
+#### Retracting approval
 
 If you previously approved a PR but want to retract your approval, you can do
 the following:
@@ -80,18 +65,30 @@ the following:
 Cody will rebuild the reviews list from the task list, and count you as
 unapproved because your check box is not checked.
 
-### Controlling what Pull Requests require reviews
+### Review Rules
 
-#### Using a branch filter
+Review rules allow Cody to automatically assign reviewers to incoming PRs based
+on criteria you define. This makes it easy for you and your contributors to
+make sure that a PR is reviewed by the people who know that code best.
 
-Cody can filter incoming Pull Requests via a branch filter and a filter policy.
+Cody supports the following types of rules:
 
-The filter is simply a list of branch names. The policy controls whether the
-filter behaves like a whitelist (only require reviews on Pull Requests that
-target the branches in this list), or blacklist (require reviews on all Pull
-Requests except those that target branches in this list).
+* Matching the paths of changed files against a regular expression
+* Rules that always apply
+
+When a rule matches, you can configure Cody either to assign a specific reviewer
+or to choose a reviewer from a given GitHub Team. If you use a Team, Cody will
+randomly pick a reviewer from the Team members.
+
+Reviewers added by a review rule may include extra context from the review rule
+to clarify what in the PR specifically needs to be reviewed. This may be a list
+of file names, excerpts from the changeset, etc.
 
 ### Using "super reviewers"
+
+**DEPRECATION NOTICE:** Super reviewers are being deprecated and will be
+removed in a future version of Cody. Use ReviewRuleAlways to automatically
+assign a reviewer from a GitHub Team on all incoming PRs instead.
 
 Cody has the concept of "super reviewers". These are a list of reviewers that
 you want to ensure sign off on every PR that gets merged.
@@ -103,18 +100,35 @@ PRs that do not include enough super reviewers in the review list will be marked
 with the failed status until the reviews are rebuilt and enough super reviewers
 are added.
 
-### Review Rules
+### Recalculating reviews
 
-Review rules allow Cody to automatically assign reviewers to incoming PRs based
-on criteria you define.
+Cody will keep the list of pending reviews up-to-date as your reviewers approve.
 
-Cody supports the following types of rules:
+However, if you decide to change the review list, you will need to inform Cody
+that new reviewers were chosen and the list of reviews needs to be rebuilt. This
+is necessary because the GitHub API does not have a way of detecting when the
+body of PR is changed.
 
-* Matching the paths of changed files against a regular expression
+To recalculate the review list, leave a comment with the following text:
 
-When a rule matches, you can configure Cody either to assign a specific reviewer
-or to choose a reviewer from a given GitHub Team. If you use a Team, Cody will
-randomly pick a reviewer from the Team members.
+```
+!rebuild-reviews
+```
+
+This will instruct the bot to rebuild the review list based on the task list in
+the PR description. Reviewers that have already checked their box will be
+pre-approved in the new list of reviews.
+
+### Controlling what Pull Requests require reviews
+
+#### Using a branch filter
+
+Cody can filter incoming Pull Requests via a branch filter and a filter policy.
+
+The filter is simply a list of branch names. The policy controls whether the
+filter behaves like a whitelist (only require reviews on Pull Requests that
+target the branches in this list), or blacklist (require reviews on all Pull
+Requests except those that target branches in this list).
 
 ## Setup
 
@@ -147,8 +161,8 @@ Consult the table below for a list of relevant settings and their function:
 Key | Description | Example
 ----|-------------|--------
 `minimum_reviewers_required` | *Fixnum*. The minimum number of reviewers required on every Pull Request. | `Setting.assign "minimum_reviewers_required", 2`
-`super_reviewers` | *Array*. The list of GitHub users that are super reviewers. | `Setting.assign "super_reviewers", ["aergonaut", "BrentW"]`
-`minimum_super_reviewers` | *Fixnum*. The minimum number of super reviewers required on every Pull Request. | `Setting.assign "minimum_super_reviewers", 1`
+`super_reviewers` | **DEPRECATED** *Array*. The list of GitHub users that are super reviewers. | `Setting.assign "super_reviewers", ["aergonaut", "BrentW"]`
+`minimum_super_reviewers` | **DEPRECATED** *Fixnum*. The minimum number of super reviewers required on every Pull Request. | `Setting.assign "minimum_super_reviewers", 1`
 `branch_filter` | *Array*. A list of branches to filter incoming Pull Requests by merge base. | `Setting.assign "branch_filter", ["experimental"]`
 `branch_filter_policy` | *Symbol*. Either `:blacklist` or `:whitelist`. Controls the behavior of the branch filter. | `Setting.assign "branch_filter_policy", :blacklist`
 `status_target_url` | *String*. The URL to link to in the GitHub commit status. | `Setting.assign "status_target_url", "https://yourteam.com/wiki/code-review-policies"`
