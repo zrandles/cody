@@ -4,22 +4,36 @@ class ReviewRule < ActiveRecord::Base
 
   # Apply this rule to the given Pull Request
   #
-  # Returns the reviewer that was added, if the rule matches and a reviewer was
-  # successfully added; otherwise returns falsey (nil or false).
+  # Returns a ReviewRuleResult possibly containing the name of the reviewer
+  # and any additional context from the match.
   def apply(pull_request_hash)
-    if matches?(pull_request_hash)
-      add_reviewer(PullRequest.find_by(number: pull_request_hash["number"]))
+    match_context = matches?(pull_request_hash)
+    if match_context
+      added_reviewer = add_reviewer(PullRequest.find_by(number: pull_request_hash["number"]))
+      ReviewRuleResult.new(added_reviewer, match_context)
+    else
+      ReviewRuleResult.new(nil, nil)
     end
   end
 
   # Determine if this rule matches the received Pull Request
   #
+  # The #matches? method should generate a string of additional context that
+  # will be appended to the Generated Reviewers addendum directly below the
+  # name of the reviewer that was added. This should be a Markdown-formatted
+  # String. Also note that the addendum is also formatted as Markdown. This
+  # means that if you want to have a blank line between the reviewer's name and
+  # the start of the context, your context should begin with a newline. By
+  # default there is no blank line in order to enable the creation of nested
+  # lists underneath the reviewer.
+  #
   # pull_request_hash - Hash-like resource from the GitHub API
   #
-  # Returns true if the rule matches the received resource, false otherwise
+  # Returns truthy on a successful match; falsey otherwise. Truthy returns are
+  # Strings providing extra context about the successful match.
   def matches?(*)
     # by default nothing matches
-    false
+    nil
   end
 
   # Add the reviewer according to the rule's configuration

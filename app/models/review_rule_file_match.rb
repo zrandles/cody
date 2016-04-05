@@ -13,7 +13,13 @@ class ReviewRuleFileMatch < ReviewRule
       files = github.pull_request_files(pull_request_hash["base"]["repo"]["full_name"], pull_request_hash["number"])
       filenames = files.map(&:filename)
 
-      filenames.any? { |filename| filename =~ self.file_match_regex }
+      matched = filenames.select { |filename| filename =~ self.file_match_regex }
+
+      if matched.any?
+        matched.map { |fn| "  - #{fn}" }.join("\n")
+      else
+        false
+      end
     rescue Octokit::NotFound => e
       if retries < MAX_RETRIES
         retries += 1

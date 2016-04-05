@@ -30,10 +30,10 @@ RSpec.describe ApplyReviewRules do
 
     context "and some rules match" do
       before do
-        expect(rule1).to receive(:apply).and_return("aergonaut")
+        expect(rule1).to receive(:apply).and_return(ReviewRuleResult.new("aergonaut", "blah"))
         expect(rule1).to receive(:name).and_return("Foobar Review")
 
-        expect(rule2).to receive(:apply).and_return(nil)
+        expect(rule2).to receive(:apply).and_return(ReviewRuleResult.new(nil, nil))
       end
 
       it "updates the PR body with the generated reviewers" do
@@ -46,7 +46,11 @@ RSpec.describe ApplyReviewRules do
           expected_addendum = <<-EOF
 ## Generated Reviewers
 
-- [ ] @aergonaut (Foobar Review)
+### Foobar Review
+
+- [ ] @aergonaut
+blah
+
 EOF
 
           updated_body == pull_request_hash["body"] + "\n\n" + expected_addendum
@@ -66,11 +70,11 @@ EOF
 
     context "and multiple rules added the same reviewer" do
       before do
-        expect(rule1).to receive(:apply).and_return("aergonaut")
-        expect(rule1).to receive(:name).and_return("Foobar Review 1")
+        expect(rule1).to receive(:apply).and_return(ReviewRuleResult.new("aergonaut", "blah"))
+        expect(rule1).to receive(:name).and_return("Foobar 1 Review")
 
-        expect(rule2).to receive(:apply).and_return("aergonaut")
-        expect(rule2).to receive(:name).and_return("Foobar Review 2")
+        expect(rule2).to receive(:apply).and_return(ReviewRuleResult.new("aergonaut", "blugh"))
+        expect(rule2).to receive(:name).and_return("Foobar 2 Review")
       end
 
       it "names the reviewer twice in the addendum" do
@@ -83,8 +87,16 @@ EOF
           expected_addendum = <<-EOF
 ## Generated Reviewers
 
-- [ ] @aergonaut (Foobar Review 1)
-- [ ] @aergonaut (Foobar Review 2)
+### Foobar 1 Review
+
+- [ ] @aergonaut
+blah
+
+### Foobar 2 Review
+
+- [ ] @aergonaut
+blugh
+
 EOF
 
           updated_body == pull_request_hash["body"] + "\n\n" + expected_addendum
@@ -94,8 +106,8 @@ EOF
 
     context "and no rules match" do
       before do
-        expect(rule1).to receive(:apply).and_return(nil)
-        expect(rule2).to receive(:apply).and_return(nil)
+        expect(rule1).to receive(:apply).and_return(ReviewRuleResult.new(nil, nil))
+        expect(rule2).to receive(:apply).and_return(ReviewRuleResult.new(nil, nil))
       end
 
       it "makes no requests to the GitHub API" do

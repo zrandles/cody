@@ -42,8 +42,29 @@ RSpec.describe ReviewRuleFileMatch, type: :model do
     context "when one of the filenames matches" do
       let(:filename) { "db/migrate/#{Time.now.strftime "%Y%m%d%H%M%S"}_foobar.rb" }
 
-      it "returns true" do
-        expect(rule.matches?(pull_request_hash)).to be_truthy
+      it "returns the filenames in an indented list" do
+        expect(rule.matches?(pull_request_hash)).to eq("  - #{filename}")
+      end
+    end
+
+    context "when several of the filenames match" do
+      let(:pull_request_files_body) do
+        fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request_files.json")))
+
+        fixture[0]["filename"] = filename
+
+        other_file = fixture[0].dup
+        other_file["filename"] = filename2
+        fixture << other_file
+
+        JSON.dump(fixture)
+      end
+
+      let(:filename) { "db/migrate/#{Time.now.strftime "%Y%m%d%H%M%S"}_foobar.rb" }
+      let(:filename2) { "db/migrate/#{Time.now.strftime "%Y%m%d%H%M%S"}_fizzbuzz.rb" }
+
+      it "returns the filenames in an indented list" do
+        expect(rule.matches?(pull_request_hash)).to eq("  - #{filename}\n  - #{filename2}")
       end
     end
 

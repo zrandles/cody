@@ -4,12 +4,12 @@ class ApplyReviewRules
 
     return if rules.empty?
 
-    added_reviewers = []
+    added_reviewers = {}
 
     rules.each do |rule|
-      added_reviewer = rule.apply(pull_request_hash)
-      if added_reviewer
-        added_reviewers << [added_reviewer, rule.name]
+      result = rule.apply(pull_request_hash)
+      if result.success?
+        added_reviewers[rule.name] = result
       end
     end
 
@@ -20,8 +20,14 @@ class ApplyReviewRules
 
 EOF
 
-    added_reviewers.each do |reviewer, rule_name|
-      s = "- [ ] @#{reviewer} (#{rule_name})\n"
+    added_reviewers.each do |rule_name, result|
+      s = <<-EOF
+### #{rule_name}
+
+- [ ] @#{result.reviewer}
+#{result.context}
+
+EOF
       addendum << s
     end
 
@@ -35,7 +41,7 @@ EOF
       body: new_body
     )
 
-    labels = added_reviewers.map(&:second)
+    labels = added_reviewers.keys
     github.add_labels_to_an_issue(
       pull_request_hash["base"]["repo"]["full_name"],
       pull_request_hash["number"],

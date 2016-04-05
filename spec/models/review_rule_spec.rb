@@ -85,20 +85,32 @@ RSpec.describe ReviewRule, type: :model do
     end
 
     context "when the rule matches" do
-      let(:rule_matches) { true }
+      let(:rule_matches) { "foobar" }
 
       it "calls add_reviewer" do
         expect(rule).to receive(:add_reviewer)
         rule.apply(pull_request_hash)
       end
+
+      it "returns a successful ReviewRuleResult" do
+        result = rule.apply(pull_request_hash)
+        expect(result).to be_success
+        expect(result.reviewer).to eq(rule.reviewer)
+      end
     end
 
     context "when the rule does not match" do
-      let(:rule_matches) { false }
+      let(:rule_matches) { nil }
 
       it "does not call add_reviewer" do
         expect(rule).to_not receive(:add_reviewer)
         rule.apply(pull_request_hash)
+      end
+
+      it "returns a failed ReviewRuleResult" do
+        result = rule.apply(pull_request_hash)
+        expect(result).to be_failure
+        expect(result.reviewer).to be_nil
       end
     end
   end
