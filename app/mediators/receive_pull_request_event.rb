@@ -23,9 +23,9 @@ class ReceivePullRequestEvent
   # commit with the correct status indicator.
   def on_synchronize
     number = @payload["number"]
+    repository = @payload['repository']['full_name']
 
-    if PullRequest.exists?(number: number)
-      pr = PullRequest.find_by(number: number)
+    if pr = PullRequest.find_by(number: number, repository: repository)
 
       status = "pending"
       description = "Not all reviewers have approved. Comment \"LGTM\" to give approval."

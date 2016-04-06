@@ -9,7 +9,11 @@ class ReviewRule < ActiveRecord::Base
   def apply(pull_request_hash)
     match_context = matches?(pull_request_hash)
     if match_context
-      added_reviewer = add_reviewer(PullRequest.find_by(number: pull_request_hash["number"]))
+      pull_request = PullRequest.find_by(
+        number: pull_request_hash['number'],
+        repository: pull_request_hash['base']['repo']['full_name']
+      )
+      added_reviewer = add_reviewer(pull_request)
       ReviewRuleResult.new(added_reviewer, match_context)
     else
       ReviewRuleResult.new(nil, nil)
@@ -42,14 +46,27 @@ class ReviewRule < ActiveRecord::Base
   #
   # Returns the login of the reviewer that was added
   def add_reviewer(pull_request)
-    reviewers_for_picking = possible_reviewers
+    all_possible_reviewers = possible_reviewers
+    # Build and filter commit authors from possible reviewers
+    exclusion_list = pull_request.commit_authors
 
-    reviewer_to_add = reviewers_for_picking.shuffle.detect { |r| !pull_request.pending_reviews.include?(r) }
+    filtered_reviewers = if exclusion_list
+      all_possible_reviewers.reject{|usr| exclusion_list.include?(usr)} 
+    else
+      all_possible_reviewers
+    end
+    
+    reviewer_to_add = filtered_reviewers.shuffle.detect { |r| !pull_request.pending_reviews.include?(r) } 
     if reviewer_to_add.nil?
       # If we failed to choose a reviewer, that means that all of the possible
-      # reviewers were already on the list. However since this rule did match
-      # we should still add someone, even if they are a duplicate.
-      reviewer_to_add = reviewers_for_picking.first
+      # reviewers were already on the list or were commit authors. 
+      # Priority for adding reviews:
+      #    1. Any potential reviewer that is not a commit author or current reviewer
+      #    2. Any potential reviewer that is not a current reviewer
+      #    3. Any potential reviewer
+      new_reviewers = all_possible_reviewers - filtered_reviewers
+      reviewer_to_add = new_reviewers.shuffle.detect { |r| !pull_request.pending_reviews.include?(r) } 
+      reviewer_to_add ||= all_possible_reviewers.sample
     end
 
     pull_request.pending_reviews << reviewer_to_add

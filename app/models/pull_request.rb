@@ -1,6 +1,7 @@
 class PullRequest < ActiveRecord::Base
   validates :number, numericality: true, presence: true
   validates :status, presence: true
+  validates :repository, presence: true
 
   serialize :pending_reviews, JSON
   serialize :completed_reviews, JSON
@@ -10,6 +11,19 @@ class PullRequest < ActiveRecord::Base
   before_save :remove_duplicate_reviewers
 
   scope :pending_review, -> { where(status: "pending_review") }
+
+
+  # List authors of commits in this pull request
+  #
+  # Returns the Array listing of all commit authors
+  def commit_authors
+    return nil unless repository
+
+    github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+    commits = github.pull_request_commits(repository, number)
+
+    commits.blank? ? nil : commits.map{|commit| commit[:commit][:author][:author][:login]}
+  end
 
   private
 

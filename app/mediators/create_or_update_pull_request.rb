@@ -5,7 +5,10 @@ class CreateOrUpdatePullRequest
   # options - Hash of options
   #           :skip_review_rules - Boolean to apply review rules or skip
   def perform(pull_request, options = {})
-    pr = PullRequest.find_or_initialize_by(number: pull_request["number"])
+    pr = PullRequest.find_or_initialize_by(
+      number: pull_request["number"],
+      repository: pull_request['base']['repo']['full_name']
+    )
 
     pr_sha = pull_request["head"]["sha"]
 
