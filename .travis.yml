@@ -1,9 +1,11 @@
 language: ruby
+sudo: false
+cache: bundler
 rvm:
   - 2.2.4
 before_script:
-  - "bundle exec rake db:create db:test:prepare"
-script: bundle exec rspec
+  - "bin/rake db:create db:test:prepare"
+script: bin/rspec
 env:
   global:
     - CODY_GITHUB_ACCESS_TOKEN=abc123
