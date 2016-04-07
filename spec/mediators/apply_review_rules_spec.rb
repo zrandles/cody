@@ -16,7 +16,7 @@ RSpec.describe ApplyReviewRules do
   let(:job) { ApplyReviewRules.new }
 
   before do
-    expect(ReviewRule).to receive(:all).and_return(all_rules)
+    expect(ReviewRule).to receive(:for_repository).and_return(all_rules)
 
     stub_request(:patch, "https://api.github.com/repos/aergonaut/testrepo/pulls/42")
     stub_request(:post, "https://api.github.com/repos/aergonaut/testrepo/issues/42/labels")

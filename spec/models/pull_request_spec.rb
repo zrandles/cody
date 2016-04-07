@@ -44,9 +44,9 @@ RSpec.describe PullRequest, type: :model do
 
     context 'without a repository' do
       # legacy case
-      it "returns nil" do
+      it "returns []" do
         allow(pr).to receive(:repository).and_return(nil)
-        expect(pr.commit_authors).to be_nil
+        expect(pr.commit_authors).to be_empty
       end
     end
   end

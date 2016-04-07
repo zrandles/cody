@@ -1,6 +1,6 @@
 class ApplyReviewRules
   def perform(pull_request_hash)
-    rules = ReviewRule.all
+    rules = ReviewRule.for_repository(pull_request_hash["base"]["repo"]["full_name"])
 
     return if rules.empty?
 

@@ -1,6 +1,11 @@
 class ReviewRule < ActiveRecord::Base
   validates :name, presence: true
   validates :reviewer, presence: true
+  validates :repository, presence: true
+
+  scope :for_repository, -> (repo) {
+    where(repository: repo)
+  }
 
   # Apply this rule to the given Pull Request
   #

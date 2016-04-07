@@ -3,8 +3,19 @@ require 'rails_helper'
 RSpec.describe ReviewRule, type: :model do
   it { is_expected.to validate_presence_of :name }
   it { is_expected.to validate_presence_of :reviewer }
+  it { is_expected.to validate_presence_of :repository }
 
   let(:rule) { build :review_rule, reviewer: reviewer }
+
+  describe ".for_repository" do
+    let!(:rule1) { create :review_rule_always, repository: "aergonaut/testrepo" }
+    let!(:rule2) { create :review_rule_always, repository: "aergonaut/cody" }
+
+    subject { ReviewRule.for_repository("aergonaut/cody") }
+
+    it { is_expected.to contain_exactly(rule2) }
+    it { is_expected.to_not include(rule1) }
+  end
 
   describe "#possible_reviewers" do
     context "when reviewer is a team ID" do
@@ -44,7 +55,7 @@ RSpec.describe ReviewRule, type: :model do
         stub_request(:get, %r{https?://api.github.com/repos/aergonaut/testrepo/pulls/#{pr.number}/commits}).to_return(
           status: 200,
           headers: { 'Content-Type' => 'application/json' },
-          body: ""
+          body: "[]"
         )
       end
 
@@ -67,7 +78,7 @@ RSpec.describe ReviewRule, type: :model do
         stub_request(:get, %r{https?://api.github.com/repos/aergonaut/testrepo/pulls/#{pr.number}/commits}).to_return(
           status: 200,
           headers: { 'Content-Type' => 'application/json' },
-          body: ""
+          body: "[]"
         )
       end
       let(:reviewer) { "aergonaut" }
