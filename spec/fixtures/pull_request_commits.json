@@ -1,1 +1,72 @@
-[{"sha":"620309853673f89a900479cc9ccc05d0365e8c8c","commit":{"author":{"name":"Chris Fung","committer":{"login":"aergonaut"},"url":"https://api.github.com/repos/aergonaut/testrepo/commits/620309853673f89a900479cc9ccc05d0365e8c8c","html_url":"https://github.com/aergonaut/testrepo/commit/620309853673f89a900479cc9ccc05d0365e8c8c","comments_url":"https://api.github.com/repos/aergonaut/testrepo/commits/620309853673f89a900479cc9ccc05d0365e8c8c/comments","author":{"login":"aergonaut"},"parents":[{"sha":"8dc928d3fd7671a7702107023f98aa72555bf4d9","url":"https://api.github.com/repos/aergonaut/testrepo/commits/8dc928d3fd7671a7702107023f98aa72555bf4d9","html_url":"https://github.com/aergonaut/testrepo/commit/8dc928d3fd7671a7702107023f98aa72555bf4d9"}]}}}]
+[
+    {
+        "author": {
+            "avatar_url": "https://avatars.githubusercontent.com/u/284007?v=3",
+            "events_url": "https://api.github.com/users/aergonaut/events{/privacy}",
+            "followers_url": "https://api.github.com/users/aergonaut/followers",
+            "following_url": "https://api.github.com/users/aergonaut/following{/other_user}",
+            "gists_url": "https://api.github.com/users/aergonaut/gists{/gist_id}",
+            "gravatar_id": "",
+            "html_url": "https://github.com/aergonaut",
+            "id": 284007,
+            "login": "aergonaut",
+            "organizations_url": "https://api.github.com/users/aergonaut/orgs",
+            "received_events_url": "https://api.github.com/users/aergonaut/received_events",
+            "repos_url": "https://api.github.com/users/aergonaut/repos",
+            "site_admin": false,
+            "starred_url": "https://api.github.com/users/aergonaut/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/aergonaut/subscriptions",
+            "type": "User",
+            "url": "https://api.github.com/users/aergonaut"
+        },
+        "comments_url": "https://api.github.com/repos/aergonaut/testrepo/commits/e9fab5c1de8983c4a4d82be7483a1cdfb3ad6fbe/comments",
+        "commit": {
+            "author": {
+                "date": "2015-10-20T00:35:15Z",
+                "email": "aergonaut@gmail.com",
+                "name": "Chris Fung"
+            },
+            "comment_count": 0,
+            "committer": {
+                "date": "2015-10-20T00:35:15Z",
+                "email": "aergonaut@gmail.com",
+                "name": "Chris Fung"
+            },
+            "message": "Update README.md",
+            "tree": {
+                "sha": "729cfe3c742e4a554f7bbd45ce6994bb68156008",
+                "url": "https://api.github.com/repos/aergonaut/testrepo/git/trees/729cfe3c742e4a554f7bbd45ce6994bb68156008"
+            },
+            "url": "https://api.github.com/repos/aergonaut/testrepo/git/commits/e9fab5c1de8983c4a4d82be7483a1cdfb3ad6fbe"
+        },
+        "committer": {
+            "avatar_url": "https://avatars.githubusercontent.com/u/284007?v=3",
+            "events_url": "https://api.github.com/users/aergonaut/events{/privacy}",
+            "followers_url": "https://api.github.com/users/aergonaut/followers",
+            "following_url": "https://api.github.com/users/aergonaut/following{/other_user}",
+            "gists_url": "https://api.github.com/users/aergonaut/gists{/gist_id}",
+            "gravatar_id": "",
+            "html_url": "https://github.com/aergonaut",
+            "id": 284007,
+            "login": "aergonaut",
+            "organizations_url": "https://api.github.com/users/aergonaut/orgs",
+            "received_events_url": "https://api.github.com/users/aergonaut/received_events",
+            "repos_url": "https://api.github.com/users/aergonaut/repos",
+            "site_admin": false,
+            "starred_url": "https://api.github.com/users/aergonaut/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/aergonaut/subscriptions",
+            "type": "User",
+            "url": "https://api.github.com/users/aergonaut"
+        },
+        "html_url": "https://github.com/aergonaut/testrepo/commit/e9fab5c1de8983c4a4d82be7483a1cdfb3ad6fbe",
+        "parents": [
+            {
+                "html_url": "https://github.com/aergonaut/testrepo/commit/77033c51f241fd2250843f917b31209adfa39164",
+                "sha": "77033c51f241fd2250843f917b31209adfa39164",
+                "url": "https://api.github.com/repos/aergonaut/testrepo/commits/77033c51f241fd2250843f917b31209adfa39164"
+            }
+        ],
+        "sha": "e9fab5c1de8983c4a4d82be7483a1cdfb3ad6fbe",
+        "url": "https://api.github.com/repos/aergonaut/testrepo/commits/e9fab5c1de8983c4a4d82be7483a1cdfb3ad6fbe"
+    }
+]
