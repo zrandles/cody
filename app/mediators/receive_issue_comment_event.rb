@@ -13,8 +13,14 @@ class ReceiveIssueCommentEvent
   end
 
   def approval_comment
-    return unless PullRequest.pending_review.exists?(number: @payload["issue"]["number"])
-    pr = PullRequest.pending_review.find_by(number: @payload["issue"]["number"])
+    return unless PullRequest.pending_review.exists?(
+      number: @payload["issue"]["number"],
+      repository: @payload["repository"]["full_name"]
+    )
+    pr = PullRequest.pending_review.find_by(
+      number: @payload["issue"]["number"],
+      repository: @payload["repository"]["full_name"]
+    )
     reviewers = pr.pending_reviews
 
     comment_author = @payload["sender"]["login"]
