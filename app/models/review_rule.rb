@@ -55,7 +55,7 @@ class ReviewRule < ActiveRecord::Base
     # Build and filter commit authors from possible reviewers
     exclusion_list = pull_request.commit_authors
 
-    filtered_reviewers = if exclusion_list
+    filtered_reviewers = if exclusion_list.any?
       all_possible_reviewers.reject{|usr| exclusion_list.include?(usr)} 
     else
       all_possible_reviewers

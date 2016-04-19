@@ -21,7 +21,11 @@ class PullRequest < ActiveRecord::Base
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
     commits = github.pull_request_commits(repository, number)
 
-    commits.map { |commit| commit[:author][:login] }
+    commits.map do |commit|
+      if author = commit[:author]
+        author[:login]
+      end
+    end.compact
   end
 
   private
