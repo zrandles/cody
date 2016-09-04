@@ -34,7 +34,7 @@ class PullRequest < ActiveRecord::Base
     github_client.update_issue(
       self.repository,
       self.number,
-      assigness: self.pending_reviews
+      assignees: self.pending_reviews
     )
   end
 
