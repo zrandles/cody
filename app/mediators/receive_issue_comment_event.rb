@@ -50,6 +50,8 @@ class ReceiveIssueCommentEvent
       pr.status = "approved"
       pr.save!
     end
+
+    pr.assign_reviewers
   end
 
   def rebuild_reviews

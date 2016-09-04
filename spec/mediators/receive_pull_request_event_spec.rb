@@ -17,6 +17,7 @@ RSpec.describe ReceivePullRequestEvent do
   describe "#perform" do
     before do
       stub_request(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40}))
+      stub_request(:patch, %r{https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/issues/\d+})
     end
 
     context "when the action is \"opened\"" do

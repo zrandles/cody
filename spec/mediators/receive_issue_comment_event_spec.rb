@@ -27,6 +27,7 @@ RSpec.describe ReceiveIssueCommentEvent do
         status: 200,
         headers: { "Content-Type" => "application/json" }
       )
+      stub_request(:patch, %r{https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/issues/\d+})
       job.perform(payload)
     end
 

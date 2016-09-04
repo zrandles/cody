@@ -12,6 +12,8 @@ class PullRequest < ActiveRecord::Base
 
   scope :pending_review, -> { where(status: "pending_review") }
 
+  include GithubApi
+
   # List authors of commits in this pull request
   #
   # Returns the Array listing of all commit authors
@@ -26,6 +28,14 @@ class PullRequest < ActiveRecord::Base
         author[:login]
       end
     end.compact
+  end
+
+  def assign_reviewers
+    github_client.update_issue(
+      self.repository,
+      self.number,
+      assigness: self.pending_reviews
+    )
   end
 
   private

@@ -96,6 +96,8 @@ class CreateOrUpdatePullRequest
       description = "Code review complete"
     end
 
+    pr.assign_reviewers
+
     github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
     github.create_status(
       pull_request["base"]["repo"]["full_name"],
