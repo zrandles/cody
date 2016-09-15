@@ -6,8 +6,8 @@ RSpec.describe PullRequest, type: :model do
   it { is_expected.to validate_presence_of :repository }
   it { is_expected.to validate_presence_of :status }
 
-  it { is_expected.to serialize(:pending_reviews) }
-  it { is_expected.to serialize(:completed_reviews) }
+  # it { is_expected.to serialize(:pending_reviews) }
+  # it { is_expected.to serialize(:completed_reviews) }
 
   describe ".pending_review" do
     let(:pending_review_pr) { FactoryGirl.create :pull_request, status: "pending_review" }
