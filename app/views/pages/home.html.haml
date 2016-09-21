@@ -1,0 +1,41 @@
+= render partial: "shared/nav"
+
+%main.w-100
+  %section.bt.b--black-10.bg-white.ph3.ph5-ns
+    .mw9.center.black
+      .pt4.pt5-ns.pb4.pb5-ns.cf
+        .w-100
+          %h1.f4.fw6.f1-ns.lh-title.measure.mt0 Automate code review.
+        .w-50-l.fl-l
+          %p.measure.f5.f4-ns.fw4.b.measure.lh-copy.black-70.ma0.mb4.mb0-l
+            Cody ensures high-quality code review by automating selection, assignment, and tracking of approval of code reviewers on every Pull Request opened on your project.
+        .w-50-l.fl-l.tl.tc-l
+          = link_to "Sign in with GitHub", "#", class: "grow dib link near-white bg-light-purple br2 ph4 pv3 f5 fw6"
+
+  %section.bt.b--black-10.bg-purple.ph3.ph5-ns
+    .mw9.center.white.pv4.pv5-ns
+      %h1.mtn.f4.ttu.tracked Getting Started
+
+      %p.f5.measure.lh-copy.near-white
+        Install the Cody GitHub integration to your repository or organization.
+
+      %p.f5.measure.lh-copy.near-white
+        %strong Optional.
+        Configure your code review policies through Cody.
+
+    .mw9.center.white.bt.b--white-10.pv4.pv5-ns
+      %h1.mtn.f4.ttu.tracked Usage
+
+      %p.f5.measure.lh-copy.near-white
+        Contributors indicate code reveiwers using GitHub Task Lists when opening a Pull Request.
+
+      %pre.f5.measure.courier.bg-white.pa4.ba.b--black-10.br1.black-70
+        \- [ ] @octocat
+
+      %p.f5.measure.lh-copy.near-white
+        Reviewers approve code by leaving a comment and checking off their checkbox in the Task List.
+
+      %pre.f5.measure.courier.bg-white.pa4.ba.b--black-10.br1.black-70
+        LGTM
+
+= render partial: "shared/footer"

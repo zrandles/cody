@@ -1,0 +1,23 @@
+= render partial: "shared/nav"
+
+%main.w-100.bg-green.black-80
+  .mw9.center.pv3.pv4-ns.bt.b--black-10
+    %section.pv3.pv4-ns
+      %h1.f3.f2-ns.ma0.mb2.mb4-ns How does Cody decide who should code review?
+
+      %p.measure.lh-copy.f5
+        Pull Request authors identify specific people they want to review their code using a GitHub Task List in the body of their Pull Request. Additionally, you can configure Review Rules that Cody will use to automatically assign code reviewers according to Pull Request characteristics such as files changed or contents of diffs.
+
+    %section.bt.b--black-10.pv3.pv4-ns
+      %h1.f3.f2-ns.ma0.mb2.mb4-ns How do I approve a Pull Request?
+
+      %p.measure.lh-copy.f5
+        As a code reviewer, simply make a comment on the Pull Request with the phrase "LGTM" and check the checkbox next to your name in the Pull Request body.
+
+    %section.bt.b--black-10.pv3.pv4-ns
+      %h1.f3.f2-ns.ma0.mb2.mb4-ns How do I add or remove a code reviewer?
+
+      %p.measure.lh-copy.f5
+        First edit the task list in the Pull Request body to add your new reviewer. Then make a comment with the command "!rebuild-reviews". This signals to Cody that you have manually changed the list of code reviewers and that the status should be updated.
+
+= render partial: "shared/footer"
