@@ -34,7 +34,7 @@ EOF
     old_body = pull_request_hash["body"]
     new_body = old_body + "\n\n" + addendum
 
-    github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+    github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
     github.update_pull_request(
       pull_request_hash["base"]["repo"]["full_name"],
       pull_request_hash["number"],

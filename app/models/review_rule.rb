@@ -7,6 +7,8 @@ class ReviewRule < ActiveRecord::Base
     where(repository: repo)
   }
 
+  include GithubApi
+
   # Apply this rule to the given Pull Request
   #
   # Returns a ReviewRuleResult possibly containing the name of the reviewer
@@ -84,8 +86,7 @@ class ReviewRule < ActiveRecord::Base
   # Returns the Array listing all the possible reviewers
   def possible_reviewers
     if self.reviewer =~ /^\d+$/
-      github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
-      team_members = github.team_members(self.reviewer)
+      team_members = github_client.team_members(self.reviewer)
       team_members.map(&:login)
     else
       # it's just a single user

@@ -37,7 +37,7 @@ class ReceivePullRequestEvent
 
       pr_sha = @payload["pull_request"]["head"]["sha"]
 
-      github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+      github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
       github.create_status(
         @payload["repository"]["full_name"],
         pr_sha,

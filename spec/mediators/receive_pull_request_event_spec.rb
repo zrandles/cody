@@ -18,6 +18,11 @@ RSpec.describe ReceivePullRequestEvent do
     before do
       stub_request(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40}))
       stub_request(:patch, %r{https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/issues/\d+})
+      stub_request(:get, %r{https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/pulls/\d+}).to_return(
+        status: 200,
+        headers: { 'Content-Type' => 'application/json' },
+        body: File.open(Rails.root.join("spec", "fixtures", "pr.json"))
+      )
     end
 
     context "when the action is \"opened\"" do

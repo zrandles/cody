@@ -9,8 +9,7 @@ class ReviewRuleFileMatch < ReviewRule
   def matches?(pull_request_hash)
     retries = 0
     begin
-      github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
-      files = github.pull_request_files(pull_request_hash["base"]["repo"]["full_name"], pull_request_hash["number"])
+      files = github_client.pull_request_files(pull_request_hash["base"]["repo"]["full_name"], pull_request_hash["number"])
       filenames = files.map(&:filename)
 
       matched = filenames.select { |filename| filename =~ self.file_match_regex }

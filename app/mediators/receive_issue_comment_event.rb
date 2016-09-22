@@ -34,7 +34,7 @@ class ReceiveIssueCommentEvent
     pr.completed_reviews << comment_author
     pr.save!
 
-    github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+    github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
     pull_resource = github.pull_request(@payload["repository"]["full_name"], @payload["issue"]["number"])
     pr_sha = pull_resource.head.sha
 
@@ -55,7 +55,7 @@ class ReceiveIssueCommentEvent
   end
 
   def rebuild_reviews
-    github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+    github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
     pull_request = github.pull_request(@payload["repository"]["full_name"], @payload["issue"]["number"])
 
     CreateOrUpdatePullRequest.new.perform(pull_request, skip_review_rules: true)

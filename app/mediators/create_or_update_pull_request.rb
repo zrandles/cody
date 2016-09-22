@@ -20,7 +20,7 @@ class CreateOrUpdatePullRequest
 
     minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")
     if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
-      github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+      github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
       github.create_status(
         pull_request["base"]["repo"]["full_name"],
         pr_sha,
@@ -53,7 +53,7 @@ class CreateOrUpdatePullRequest
       included_super_reviewers = all_reviewers.count { |r| super_reviewers.include?(r) }
 
       if included_super_reviewers < minimum_super_reviewers
-        github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
+        github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
         github.create_status(
           pull_request["base"]["repo"]["full_name"],
           pr_sha,
@@ -88,24 +88,7 @@ class CreateOrUpdatePullRequest
     pr.status = status
     pr.save!
 
-    commit_status = "pending"
-    description = "Not all reviewers have approved. Comment \"LGTM\" to give approval."
-
-    if pr.status == "approved"
-      commit_status = "success"
-      description = "Code review complete"
-    end
-
+    pr.update_status
     pr.assign_reviewers
-
-    github = Octokit::Client.new(access_token: ENV["CODY_GITHUB_ACCESS_TOKEN"])
-    github.create_status(
-      pull_request["base"]["repo"]["full_name"],
-      pr_sha,
-      commit_status,
-      context: "code-review/cody",
-      description: description,
-      target_url: Setting.lookup("status_target_url")
-    )
   end
 end
