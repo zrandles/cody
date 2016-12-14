@@ -1,5 +1,5 @@
 require 'spec_helper'
-require_relative '../../lib/review_rule_result'
+require_relative '../../app/models/review_rule_result'
 
 RSpec.describe ReviewRuleResult do
   subject { ReviewRuleResult.new }

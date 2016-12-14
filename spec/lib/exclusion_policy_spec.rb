@@ -1,5 +1,5 @@
 require 'spec_helper'
-require_relative '../../lib/exclusion_policy'
+require_relative '../../app/models/exclusion_policy'
 
 RSpec.describe ExclusionPolicy do
   describe "#permitted?" do
