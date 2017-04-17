@@ -10,6 +10,8 @@ class CreateOrUpdatePullRequest
       repository: pull_request['base']['repo']['full_name']
     )
 
+    github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
+
     pr_sha = pull_request["head"]["sha"]
 
     body = pull_request["body"] || ""
@@ -20,7 +22,6 @@ class CreateOrUpdatePullRequest
 
     minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")
     if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
-      github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
       github.create_status(
         pull_request["base"]["repo"]["full_name"],
         pr_sha,
@@ -53,7 +54,6 @@ class CreateOrUpdatePullRequest
       included_super_reviewers = all_reviewers.count { |r| super_reviewers.include?(r) }
 
       if included_super_reviewers < minimum_super_reviewers
-        github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
         github.create_status(
           pull_request["base"]["repo"]["full_name"],
           pr_sha,
@@ -65,6 +65,29 @@ class CreateOrUpdatePullRequest
 
         return
       end
+    end
+
+    reviewers_without_access = pending_reviews.select do |reviewer|
+      !github.collaborator?(pr.repository, reviewer)
+    end
+
+    unless reviewers_without_access.empty?
+      verb_phrase = if reviewers_without_access.count > 1
+        "are not collaborators"
+      else
+        "is not a collaborator"
+      end
+
+      github.create_status(
+        pull_request["base"]["repo"]["full_name"],
+        pr_sha,
+        "failure",
+        context: "code-review/cody",
+        description: "PLUM: #{reviewers_without_access.join(", ")} #{verb_phrase} on this repository",
+        target_url: Setting.lookup("status_target_url")
+      )
+
+      return
     end
 
     pr.status = "pending_review"

@@ -23,6 +23,7 @@ RSpec.describe ReceivePullRequestEvent do
         headers: { 'Content-Type' => 'application/json' },
         body: File.open(Rails.root.join("spec", "fixtures", "pr.json"))
       )
+      stub_request(:get, %r{https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/collaborators/[A-Za-z0-9_-]+}).to_return(status: 204)
     end
 
     context "when the action is \"opened\"" do

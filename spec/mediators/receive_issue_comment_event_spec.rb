@@ -76,41 +76,5 @@ RSpec.describe ReceiveIssueCommentEvent do
         end
       end
     end
-
-    context "when rebuilding reviews" do
-      let(:comment) { "!rebuild-reviews" }
-
-      let(:author) { "metakube" }
-
-      let(:pr_response_body) do
-        from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pr.json")))
-        from_fixture["number"] = pr.number
-        from_fixture["body"] = "- [ ] @aergonaut\n- [ ] @BrentW"
-        from_fixture["user"]["login"] = author
-        JSON.dump(from_fixture)
-      end
-
-      before do
-        expect(ApplyReviewRules).to_not receive(:new)
-      end
-
-      context "when the commenter is the PR author" do
-        let(:sender) { author }
-
-        it "rebuilds the reviewers from the PR body" do
-          pr.reload
-          expect(pr.pending_reviews).to contain_exactly("aergonaut", "BrentW")
-        end
-      end
-
-      context "when the commenter is one of the previous reviewers" do
-        let(:sender) { pr.pending_reviews.first }
-
-        it "rebuilds the reviewers from the PR body" do
-          pr.reload
-          expect(pr.pending_reviews).to contain_exactly("aergonaut", "BrentW")
-        end
-      end
-    end
   end
 end
