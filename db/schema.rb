@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -11,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160406185636) do
+ActiveRecord::Schema.define(version: 20170417175545) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,11 +18,13 @@ ActiveRecord::Schema.define(version: 20160406185636) do
   create_table "pull_requests", force: :cascade do |t|
     t.string   "status"
     t.string   "number"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
     t.string   "pending_reviews"
     t.string   "completed_reviews"
     t.string   "repository"
+    t.integer  "parent_pull_request_id"
+    t.index ["parent_pull_request_id"], name: "index_pull_requests_on_parent_pull_request_id", using: :btree
   end
 
   create_table "review_rules", force: :cascade do |t|
@@ -39,8 +40,7 @@ ActiveRecord::Schema.define(version: 20160406185636) do
   create_table "settings", force: :cascade do |t|
     t.string "key"
     t.string "value"
+    t.index ["key", "value"], name: "index_settings_on_key_and_value", unique: true, using: :btree
   end
-
-  add_index "settings", ["key", "value"], name: "index_settings_on_key_and_value", unique: true, using: :btree
 
 end

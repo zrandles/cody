@@ -6,9 +6,6 @@ RSpec.describe PullRequest, type: :model do
   it { is_expected.to validate_presence_of :repository }
   it { is_expected.to validate_presence_of :status }
 
-  # it { is_expected.to serialize(:pending_reviews) }
-  # it { is_expected.to serialize(:completed_reviews) }
-
   describe ".pending_review" do
     let(:pending_review_pr) { FactoryGirl.create :pull_request, status: "pending_review" }
     let(:approved_pr) { FactoryGirl.create :pull_request, status: "approved" }
@@ -94,6 +91,67 @@ RSpec.describe PullRequest, type: :model do
         allow(pr).to receive(:repository).and_return(nil)
         expect(pr.commit_authors).to be_empty
       end
+    end
+  end
+
+  describe "#link_by_number" do
+    let(:pr) { FactoryGirl.build :pull_request }
+    let(:parent_number) { 1234 }
+
+    context "when the parent PR is known to Cody" do
+      let!(:parent) { FactoryGirl.create :pull_request, status: "pending_review", number: parent_number }
+
+      it "returns truthy, sets the parent, copies the status, and persists the object" do
+        expect(pr.link_by_number(parent_number)).to be_truthy
+        expect(pr.parent_pull_request).to eq(parent)
+        expect(pr.status).to eq(parent.status)
+        expect(pr).to be_persisted
+      end
+    end
+
+    context "when the parent PR is not known to Cody" do
+      it "returns falsey, does not persist the object" do
+        expect(pr.link_by_number(parent_number)).to be_falsey
+        expect(pr).to_not be_persisted
+      end
+    end
+  end
+
+  describe "updating child PRs" do
+    let!(:pr) { FactoryGirl.create :pull_request, status: "pending_review", number: 1234 }
+    let!(:child) { FactoryGirl.build :pull_request }
+
+    before do
+      child_pr = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pr.json")))
+      child_pr["number"] = child.number
+      stub_request(:get, %r{https://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/pulls/#{child.number}}).to_return(
+        status: 200,
+        headers: { 'Content-Type' => 'application/json' },
+        body: child_pr.to_json
+      )
+
+      pr_1234 = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pr.json")))
+      pr_1234["number"] = 1234
+      stub_request(:get, %r{https://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/pulls/1234}).to_return(
+        status: 200,
+        headers: { 'Content-Type' => 'application/json' },
+        body: pr_1234.to_json
+      )
+
+      stub_request(:post, "https://api.github.com/repos/#{child.repository}/statuses/#{child.head_sha}")
+
+      child.link_by_number(1234)
+    end
+
+    it "updates all child PRs when the status changes" do
+      pr.status = "approved"
+      pr.save!
+      expect(child.reload.status).to eq(pr.status)
+      expect(WebMock).to have_requested(:post, "https://api.github.com/repos/#{child.repository}/statuses/#{child.head_sha}")
+        .with { |request|
+          json_body = JSON.load(request.body)
+          json_body["state"] == "success"
+        }
     end
   end
 end

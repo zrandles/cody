@@ -12,25 +12,21 @@ class CreateOrUpdatePullRequest
 
     github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
 
-    pr_sha = pull_request["head"]["sha"]
-
     body = pull_request["body"] || ""
-    check_box_pairs = body.scan(/[*-] +\[([ x])\] +@([A-Za-z0-9_-]+)/)
+
+    if body =~ PullRequest::REVIEW_LINK_REGEX && pr.link_by_number($1)
+      pr.update_status
+      return
+    end
+
+    check_box_pairs = body.scan(PullRequest::REVIEWER_CHECKBOX_REGEX)
 
     # uniqueness by reviewer login
     check_box_pairs.uniq! { |pair| pair[1] }
 
     minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")
     if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
-      github.create_status(
-        pull_request["base"]["repo"]["full_name"],
-        pr_sha,
-        "failure",
-        context: "code-review/cody",
-        description: "APRICOT: Too few reviewers are listed",
-        target_url: Setting.lookup("status_target_url")
-      )
-
+      pr.update_status(PullRequest::STATUS_APRICOT)
       return
     end
 
@@ -54,15 +50,7 @@ class CreateOrUpdatePullRequest
       included_super_reviewers = all_reviewers.count { |r| super_reviewers.include?(r) }
 
       if included_super_reviewers < minimum_super_reviewers
-        github.create_status(
-          pull_request["base"]["repo"]["full_name"],
-          pr_sha,
-          "failure",
-          context: "code-review/cody",
-          description: "AVOCADO: PR does not meet super-review threshold",
-          target_url: Setting.lookup("status_target_url")
-        )
-
+        pr.update_status(PullRequest::STATUS_AVOCADO)
         return
       end
     end
@@ -78,15 +66,9 @@ class CreateOrUpdatePullRequest
         "is not a collaborator"
       end
 
-      github.create_status(
-        pull_request["base"]["repo"]["full_name"],
-        pr_sha,
-        "failure",
-        context: "code-review/cody",
-        description: "PLUM: #{reviewers_without_access.join(", ")} #{verb_phrase} on this repository",
-        target_url: Setting.lookup("status_target_url")
-      )
+      reviewers_phrase = reviewers_without_access.join(", ")
 
+      pr.update_status(PullRequest::STATUS_PLUM % { reviewers: reviewers_phrase, verb_phrase: verb_phrase })
       return
     end
 

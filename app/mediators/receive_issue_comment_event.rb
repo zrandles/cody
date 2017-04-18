@@ -21,6 +21,10 @@ class ReceiveIssueCommentEvent
       number: @payload["issue"]["number"],
       repository: @payload["repository"]["full_name"]
     )
+
+    # Do not process approval comments on child PRs
+    return if pr.parent_pull_request.present?
+
     reviewers = pr.pending_reviews
 
     comment_author = @payload["sender"]["login"]
