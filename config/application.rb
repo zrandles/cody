@@ -13,5 +13,11 @@ module Cody
     # -- all .rb files in that directory are automatically loaded.
 
     config.autoload_paths << Rails.root.join("lib")
+
+    config.filter_parameters << :password
   end
+end
+
+Raven.configure do |config|
+  config.dsn = ENV["RAVEN_DSN"]
 end

@@ -12,7 +12,7 @@ RSpec.describe WebhooksController, type: :controller do
 
     context "when the action is \"opened\"" do
       it "delegates to ReceivePullRequestEvent" do
-        expect { post :pull_request, JSON.dump(payload) }.to change(ReceivePullRequestEvent.jobs, :size).by(1)
+        expect { post :pull_request, body: JSON.dump(payload) }.to change(ReceivePullRequestEvent.jobs, :size).by(1)
       end
     end
 
@@ -20,12 +20,12 @@ RSpec.describe WebhooksController, type: :controller do
       let(:action) { "closed" }
 
       it "does not create a new ReceivePullRequestEvent job" do
-        expect { post :pull_request, JSON.dump(payload) }.to_not change(ReceivePullRequestEvent.jobs, :size)
+        expect { post :pull_request, body: JSON.dump(payload) }.to_not change(ReceivePullRequestEvent.jobs, :size)
       end
     end
 
     it "returns 202 Accepted" do
-      post :pull_request, JSON.dump(payload)
+      post :pull_request, body: JSON.dump(payload)
       expect(response.status).to be(202)
     end
 
@@ -47,12 +47,12 @@ RSpec.describe WebhooksController, type: :controller do
         let(:merge_base) { "foobar" }
 
         it "returns 200 OK" do
-          post :pull_request, JSON.dump(payload)
+          post :pull_request, body: JSON.dump(payload)
           expect(response.status).to be(200)
         end
 
         it "does not create a new job" do
-          expect { post :pull_request, JSON.dump(payload) }.to_not change(ReceivePullRequestEvent.jobs, :size)
+          expect { post :pull_request, body: JSON.dump(payload) }.to_not change(ReceivePullRequestEvent.jobs, :size)
         end
       end
 
@@ -60,7 +60,7 @@ RSpec.describe WebhooksController, type: :controller do
         let(:merge_base) { "master" }
 
         it "delegates to ReceivePullRequestEvent" do
-          expect { post :pull_request, JSON.dump(payload) }.to change(ReceivePullRequestEvent.jobs, :size).by(1)
+          expect { post :pull_request, body: JSON.dump(payload) }.to change(ReceivePullRequestEvent.jobs, :size).by(1)
         end
       end
     end
@@ -70,11 +70,11 @@ RSpec.describe WebhooksController, type: :controller do
     let(:payload) { JSON.load(File.open(Rails.root.join("spec", "fixtures", "issue_comment.json"))) }
 
     it "creates a new ReceiveIssueCommentEvent job" do
-      expect { post :issue_comment, JSON.dump(payload) }.to change(ReceiveIssueCommentEvent.jobs, :size).by(1)
+      expect { post :issue_comment, body: JSON.dump(payload) }.to change(ReceiveIssueCommentEvent.jobs, :size).by(1)
     end
 
     it "returns 202 Accepted" do
-      post :issue_comment, JSON.dump(payload)
+      post :issue_comment, body: JSON.dump(payload)
       expect(response.status).to be(202)
     end
   end
