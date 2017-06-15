@@ -8,6 +8,6 @@ class ExclusionPolicy
   end
 
   def permitted?(element)
-    !((BLACKLIST == @policy) == @list.include?(element))
+    (BLACKLIST == @policy) != @list.include?(element)
   end
 end

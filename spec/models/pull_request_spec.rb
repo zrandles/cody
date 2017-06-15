@@ -122,7 +122,7 @@ RSpec.describe PullRequest, type: :model do
     let!(:child) { FactoryGirl.build :pull_request }
 
     before do
-      child_pr = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pr.json")))
+      child_pr = json_fixture("pr")
       child_pr["number"] = child.number
       stub_request(:get, %r{https://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/pulls/#{child.number}}).to_return(
         status: 200,
@@ -130,7 +130,7 @@ RSpec.describe PullRequest, type: :model do
         body: child_pr.to_json
       )
 
-      pr_1234 = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pr.json")))
+      pr_1234 = json_fixture("pr")
       pr_1234["number"] = 1234
       stub_request(:get, %r{https://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/pulls/1234}).to_return(
         status: 200,

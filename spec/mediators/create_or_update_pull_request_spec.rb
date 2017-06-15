@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe CreateOrUpdatePullRequest, type: :model do
   describe "#perform" do
     let(:payload) do
-      from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request.json")))
+      from_fixture = json_fixture("pull_request")
       from_fixture["action"] = "opened"
       from_fixture["pull_request"]["body"] = body
       from_fixture["pull_request"]["number"] = 9876
@@ -20,7 +20,7 @@ RSpec.describe CreateOrUpdatePullRequest, type: :model do
       let!(:parent_pr) { FactoryGirl.create :pull_request, status: "pending_review", number: 1234 }
 
       before do
-        pr_9876 = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pr.json")))
+        pr_9876 = json_fixture("pr")
         pr_9876["number"] = 9876
         pr_9876["head"]["sha"] = head_sha
         stub_request(:get, %r{https://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/pulls/9876}).to_return(
@@ -29,7 +29,7 @@ RSpec.describe CreateOrUpdatePullRequest, type: :model do
           body: pr_9876.to_json
         )
 
-        pr_1234 = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pr.json")))
+        pr_1234 = json_fixture("pr")
         pr_1234["number"] = 1234
         stub_request(:get, %r{https://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/pulls/1234}).to_return(
           status: 200,
@@ -47,8 +47,10 @@ RSpec.describe CreateOrUpdatePullRequest, type: :model do
 
       it "posts the commit status" do
         CreateOrUpdatePullRequest.new.perform(payload)
-        expect(WebMock).to have_requested(:post, "https://api.github.com/repos/#{repo_full_name}/statuses/#{head_sha}")
-          .with { |request|
+        expect(WebMock).to have_requested(
+          :post,
+          "https://api.github.com/repos/#{repo_full_name}/statuses/#{head_sha}"
+        ).with { |request|
             json_body = JSON.load(request.body)
             json_body["description"] == "Review is delegated to #1234"
           }

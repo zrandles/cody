@@ -1,5 +1,5 @@
 class ReviewRuleAlways < ReviewRule
   def matches?(*)
-    "  - This rule is always triggered"
+    self.match_context = "  - This rule is always triggered"
   end
 end

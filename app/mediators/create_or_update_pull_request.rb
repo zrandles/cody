@@ -4,13 +4,16 @@ class CreateOrUpdatePullRequest
   # pull_request - A Hash-like object containing the PR data from the GitHub API
   # options - Hash of options
   #           :skip_review_rules - Boolean to apply review rules or skip
+  # rubocop:disable Metrics/LineLength, Metrics/CyclomaticComplexity, Metrics/MethodLength
   def perform(pull_request, options = {})
     pr = PullRequest.find_or_initialize_by(
       number: pull_request["number"],
-      repository: pull_request['base']['repo']['full_name']
+      repository: pull_request["base"]["repo"]["full_name"]
     )
 
-    github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
+    github = Octokit::Client.new(
+      access_token: Rails.application.secrets.github_access_token
+    )
 
     body = pull_request["body"] || ""
 
@@ -19,13 +22,18 @@ class CreateOrUpdatePullRequest
       return
     end
 
-    check_box_pairs = body.scan(PullRequest::REVIEWER_CHECKBOX_REGEX)
+    prelude, _ = body.split(ReviewRule::GENERATED_REVIEWERS_REGEX, 2)
+
+    # Collect reviewers listed in the PR prelude.
+    check_box_pairs = prelude.scan(PullRequest::REVIEWER_CHECKBOX_REGEX)
 
     # uniqueness by reviewer login
     check_box_pairs.uniq! { |pair| pair[1] }
 
     minimum_reviewers_required = Setting.lookup("minimum_reviewers_required")
-    if minimum_reviewers_required.present? && check_box_pairs.count < minimum_reviewers_required
+    if minimum_reviewers_required.present? &&
+      check_box_pairs.count < minimum_reviewers_required
+
       pr.update_status(PullRequest::STATUS_APRICOT)
       return
     end
@@ -55,16 +63,17 @@ class CreateOrUpdatePullRequest
       end
     end
 
-    reviewers_without_access = pending_reviews.select do |reviewer|
-      !github.collaborator?(pr.repository, reviewer)
+    reviewers_without_access = pending_reviews.reject do |reviewer|
+      github.collaborator?(pr.repository, reviewer)
     end
 
     unless reviewers_without_access.empty?
-      verb_phrase = if reviewers_without_access.count > 1
-        "are not collaborators"
-      else
-        "is not a collaborator"
-      end
+      verb_phrase =
+        if reviewers_without_access.count > 1
+          "are not collaborators"
+        else
+          "is not a collaborator"
+        end
 
       reviewers_phrase = reviewers_without_access.join(", ")
 
@@ -73,22 +82,50 @@ class CreateOrUpdatePullRequest
     end
 
     pr.status = "pending_review"
-    pr.pending_reviews = pending_reviews
-    pr.completed_reviews = completed_reviews
+
     pr.save!
 
+    # Synchronize the reviewers
+    all_reviewers.each do |login|
+      # we only respect manual updates to non-generated reviewers
+      reviewer = pr.reviewers.find_by(login: login, review_rule_id: nil)
+      if reviewer.present?
+        # they were on the list previously
+        if completed_reviews.include?(login)
+          # marked done
+          reviewer.update!(status: Reviewer::STATUS_APPROVED)
+        elsif pending_reviews.include?(login)
+          # marked undone
+          reviewer.update!(status: Reviewer::STATUS_PENDING_APPROVAL)
+        else
+          # removed from the list altogether
+          reviewer.destroy!
+        end
+      # they weren't on the list previously
+      elsif completed_reviews.include?(login)
+        # marked down
+        pr.reviewers.create!(login: login, status: Reviewer::STATUS_APPROVED)
+      else
+        # otherwise they're marked undone
+        pr.reviewers.create!(
+          login: login,
+          status: Reviewer::STATUS_PENDING_APPROVAL
+        )
+      end
+    end
+
     unless options[:skip_review_rules]
-      ApplyReviewRules.new.perform(pull_request)
+      ApplyReviewRules.new(pr, pull_request).perform
     end
 
     pr.reload
-    pending_reviews = pr.pending_reviews
 
-    status = if pending_reviews.any?
-      "pending_review"
-    else
-      "approved"
-    end
+    status =
+      if !pr.reviewers.pending_review.empty?
+        "pending_review"
+      else
+        "approved"
+      end
 
     pr.status = status
     pr.save!

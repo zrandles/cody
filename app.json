@@ -4,14 +4,27 @@
   "repository": "https://github.com/aergonaut/cody",
   "addons": [
     "heroku-postgresql:hobby-dev",
-    "heroku-redis:hobby-dev"
+    "heroku-redis:hobby-dev",
+    "memcachedcloud:30"
   ],
   "scripts": {
     "postdeploy": "bundle exec rake db:schema:load"
   },
+  "formation": {
+    "web": {
+      "quantity": 1
+    },
+    "worker": {
+      "quantity": 1
+    }
+  },
   "env": {
     "CODY_GITHUB_ACCESS_TOKEN": {
       "description": "A GitHub personal access token used for setting commit statuses and access Pull Request data.",
+      "required": true
+    },
+    "RAVEN_DSN": {
+      "description": "Sentry DSN. See https://docs.sentry.io/quickstart/#about-the-dsn",
       "required": true
     }
   }

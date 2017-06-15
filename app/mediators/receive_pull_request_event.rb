@@ -23,12 +23,13 @@ class ReceivePullRequestEvent
   # commit with the correct status indicator.
   def on_synchronize
     number = @payload["number"]
-    repository = @payload['repository']['full_name']
+    repository = @payload["repository"]["full_name"]
 
     if pr = PullRequest.find_by(number: number, repository: repository)
 
       status = "pending"
-      description = "Not all reviewers have approved. Comment \"LGTM\" to give approval."
+      description =
+        "Not all reviewers have approved. Comment \"LGTM\" to give approval."
 
       if pr.status == "approved"
         status = "success"
@@ -37,7 +38,9 @@ class ReceivePullRequestEvent
 
       pr_sha = @payload["pull_request"]["head"]["sha"]
 
-      github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
+      github = Octokit::Client.new(
+        access_token: Rails.application.secrets.github_access_token
+      )
       github.create_status(
         @payload["repository"]["full_name"],
         pr_sha,

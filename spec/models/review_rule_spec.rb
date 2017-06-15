@@ -48,87 +48,23 @@ RSpec.describe ReviewRule, type: :model do
   describe "#add_reviewer" do
     let(:pr) { create :pull_request, pending_reviews: pending_reviews }
 
-    let(:rule) { build :review_rule, reviewer: reviewer }
+    let(:rule) { create :review_rule, reviewer: reviewer }
 
-    context "when the reviewer is not already on the review list" do
-      before do
-        stub_request(:get, %r{https?://api.github.com/repos/aergonaut/testrepo/pulls/#{pr.number}/commits}).to_return(
-          status: 200,
-          headers: { 'Content-Type' => 'application/json' },
-          body: "[]"
-        )
-      end
-
-      let(:reviewer) { "BrentW" }
-
-      let(:pending_reviews) { ["aergonaut"] }
-
-      it "returns the username that was added" do
-        expect(rule.add_reviewer(pr)).to eq("BrentW")
-      end
-
-      it "adds the reviewer to the pending reviews" do
-        expect { rule.add_reviewer(pr) }.to change { pr.pending_reviews }
-          .from(["aergonaut"]).to(["aergonaut", "BrentW"])
-      end
+    before do
+      expect(rule).to receive(:choose_reviewer).and_return(reviewer)
     end
 
-    context "when the reviewer is already on the review list" do
-      before do
-        stub_request(:get, %r{https?://api.github.com/repos/aergonaut/testrepo/pulls/#{pr.number}/commits}).to_return(
-          status: 200,
-          headers: { 'Content-Type' => 'application/json' },
-          body: "[]"
-        )
-      end
-      let(:reviewer) { "aergonaut" }
+    let(:reviewer) { "BrentW" }
 
-      let(:pending_reviews) { ["aergonaut"] }
+    let(:pending_reviews) { ["aergonaut"] }
 
-      it "returns the reviewer" do
-        expect(rule.add_reviewer(pr)).to eq("aergonaut")
-      end
-
-      it "does not change pending reviews" do
-        expect { rule.add_reviewer(pr) }.to_not change { pr.pending_reviews }
-      end
+    it "returns the username that was added" do
+      expect(rule.add_reviewer(pr)).to eq("BrentW")
     end
-    
-    context "when the reviewer is the commit author" do
-      before do
-        stub_request(:get, %r{https?://api.github.com/repos/aergonaut/testrepo/pulls/#{pr.number}/commits}).to_return(
-          status: 200,
-          headers: { 'Content-Type' => 'application/json' },
-          body: File.open(Rails.root.join("spec", "fixtures", "pull_request_commits.json"))
-        )
-      end
 
-      context "and there are no other reviewer" do
-        let(:reviewer) { "aergonaut" }
-
-        let(:pending_reviews) { ["aergonaut"] }
-
-        it "returns the reviewer" do
-          expect(rule.add_reviewer(pr)).to eq('aergonaut')
-        end
-
-        it "does not change pending reviews" do
-          expect { rule.add_reviewer(pr) }.to_not change { pr.pending_reviews }
-        end
-      end
-
-      context "and there is another reviewer" do
-        before do
-          allow_any_instance_of(ReviewRule).to receive(:possible_reviewers).and_return(['aergonaut','mrpasquini'])
-        end
-        let(:reviewer) { } # stubbed possible_reviewers method instead
-        let(:pending_reviews) { ["brentW"] }
-
-        it "returns the other reviewer" do
-          expect(rule.add_reviewer(pr)).to eq('mrpasquini')
-        end
-      end
-      
+    it "adds the reviewer to the pending reviews" do
+      rule.add_reviewer(pr)
+      expect(pr.reviewers.pending_review.map(&:login)).to include(reviewer)
     end
   end
 
@@ -140,48 +76,74 @@ RSpec.describe ReviewRule, type: :model do
       }
     end
 
+    let(:pr) { instance_double(PullRequest) }
     let(:rule) { build :review_rule, reviewer: "aergonaut" }
 
     before do
-      stub_request(:get, %r{https?://api.github.com/repos/aergonaut/testrepo/pulls/#{pull_request_hash['number']}/commits}).to_return(
-        status: 200,
-        headers: { 'Content-Type' => 'application/json' },
-        body: File.open(Rails.root.join("spec", "fixtures", "pull_request_commits.json"))
-      )
-
-      create :pull_request, number: pull_request_hash['number'], repository: 'aergonaut/testrepo'
-
-      expect(rule).to receive(:matches?).with(pull_request_hash).and_return(rule_matches)
+      expect(rule).to receive(:previously_applied?)
+        .with(pr)
+        .and_return(was_previously_applied)
     end
 
-    context "when the rule matches" do
-      let(:rule_matches) { "foobar" }
+    context "when the rule was previously applied" do
+      let(:was_previously_applied) { true }
+      let(:does_match) { true }
 
-      it "calls add_reviewer" do
-        expect(rule).to receive(:add_reviewer)
-        rule.apply(pull_request_hash)
+      before do
+        expect(rule).to_not receive(:matches?)
       end
 
-      it "returns a successful ReviewRuleResult" do
-        result = rule.apply(pull_request_hash)
-        expect(result).to be_success
-        expect(result.reviewer).to eq(rule.reviewer)
-      end
-    end
-
-    context "when the rule does not match" do
-      let(:rule_matches) { nil }
-
-      it "does not call add_reviewer" do
+      it "does not call add_reviewer again" do
         expect(rule).to_not receive(:add_reviewer)
-        rule.apply(pull_request_hash)
+        rule.apply(pr, pull_request_hash)
+      end
+    end
+
+    context "when the rule was not previously applied" do
+      let(:was_previously_applied) { false }
+
+      before do
+        expect(rule).to receive(:matches?)
+          .with(pull_request_hash)
+          .and_return(does_match)
       end
 
-      it "returns a failed ReviewRuleResult" do
-        result = rule.apply(pull_request_hash)
-        expect(result).to be_failure
-        expect(result.reviewer).to be_nil
+      context "and the rule matches" do
+        let(:does_match) { true }
+
+        it "calls add_reviewer" do
+          expect(rule).to receive(:add_reviewer)
+          rule.apply(pr, pull_request_hash)
+        end
       end
+
+      context "and the rule does not match" do
+        let(:does_match) { false }
+
+        it "does not call add_reviewer" do
+          expect(rule).to_not receive(:add_reviewer)
+          rule.apply(pr, pull_request_hash)
+        end
+      end
+    end
+  end
+
+  describe "#previously_applied?" do
+    let(:rule) { FactoryGirl.create :review_rule }
+    let(:pr) { FactoryGirl.create :pull_request }
+
+    subject { rule.previously_applied?(pr) }
+
+    context "when the PR already has a reviewer that says it came from this rule" do
+      before do
+        FactoryGirl.create :reviewer, review_rule: rule, pull_request: pr
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when the PR does not have a reviewer that says it came from this rule" do
+      it { is_expected.to be_falsey }
     end
   end
 end

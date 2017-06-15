@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe ReceivePullRequestEvent do
   let(:payload) do
-    from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request.json")))
+    from_fixture = json_fixture("pull_request")
     from_fixture["action"] = action
     from_fixture["pull_request"]["body"] = body
     from_fixture
@@ -104,9 +104,10 @@ RSpec.describe ReceivePullRequestEvent do
             "- [ ] @aergonaut\n- [x] @BrentW\n"
           end
 
-          it "puts the ones that have already approved into the completed_reviews array" do
+          it "creates Reviewers appropriately for each reviewer" do
             job.perform(payload)
-            expect(PullRequest.last.completed_reviews).to contain_exactly("BrentW")
+            expect(PullRequest.last.reviewers.pending_review.map(&:login)).to contain_exactly("aergonaut")
+            expect(PullRequest.last.reviewers.completed_review.map(&:login)).to contain_exactly("BrentW")
           end
         end
 

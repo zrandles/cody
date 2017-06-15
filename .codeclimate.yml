@@ -6,14 +6,11 @@ engines:
       csrf_not_protected_by_raising_exception:
         enabled: false
   rubocop:
-    enabled: true
-    checks:
-      Rubocop/Metrics/CyclomaticComplexity:
-        enabled: false
+    enabled: false
   bundler-audit:
     enabled: true
   csslint:
-    enabled: true
+    enabled: false
   duplication:
     enabled: true
     config:
@@ -25,8 +22,6 @@ engines:
   eslint:
     enabled: true
   fixme:
-    enabled: true
-  rubocop:
     enabled: true
 ratings:
   paths:

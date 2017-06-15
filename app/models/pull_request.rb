@@ -9,14 +9,15 @@ class PullRequest < ActiveRecord::Base
   after_initialize :default_pending_and_completed_reviews
 
   before_save :remove_duplicate_reviewers
-  after_save :update_child_pull_requests, if: :status_previously_changed?
+  after_save :update_child_pull_requests, if: -> { saved_change_to_status? }
 
   scope :pending_review, -> { where(status: "pending_review") }
 
   belongs_to :parent_pull_request, required: false, class_name: "PullRequest"
+  has_many :reviewers
 
-  REVIEW_LINK_REGEX = /^(?:R|r)eview(?:ed)?\s+in\s+#(\d+)$/.freeze
-  REVIEWER_CHECKBOX_REGEX = /[*-] +\[([ x])\] +@([A-Za-z0-9_-]+)/.freeze
+  REVIEW_LINK_REGEX = /^(?:R|r)eview(?:ed)?\s+in\s+#(\d+)$/
+  REVIEWER_CHECKBOX_REGEX = /[*-] +\[([ x])\] +@([A-Za-z0-9_-]+)/
 
   STATUS_APRICOT = "APRICOT: Too few reviewers are listed".freeze
   STATUS_AVOCADO = "AVOCADO: PR does not meet super-review threshold".freeze
@@ -50,7 +51,7 @@ class PullRequest < ActiveRecord::Base
     github_client.update_issue(
       self.repository,
       self.number,
-      assignees: self.pending_reviews
+      assignees: self.pending_review_logins
     )
   end
 
@@ -83,6 +84,14 @@ class PullRequest < ActiveRecord::Base
     self.save!
   end
 
+  def generated_reviewers
+    reviewers.from_rule
+  end
+
+  def pending_review_logins
+    reviewers.pending_review.map(&:login)
+  end
+
   private
 
   def update_child_pull_requests
@@ -106,9 +115,14 @@ class PullRequest < ActiveRecord::Base
 
   def commit_status_details(message = nil)
     if self.parent_pull_request
+      desc = format(
+        STATUS_DELEGATED,
+        parent_number: self.parent_pull_request.number
+      )
+
       {
         context: "code-review/cody",
-        description: STATUS_DELEGATED % { parent_number: self.parent_pull_request.number },
+        description: desc,
         target_url: self.parent_pull_request.html_url
       }
     else

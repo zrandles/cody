@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe WebhooksController, type: :controller do
   describe "POST pull_request" do
     let(:payload) do
-      from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request.json")))
+      from_fixture = json_fixture("pull_request")
       from_fixture["action"] = action
       from_fixture
     end
@@ -37,7 +37,7 @@ RSpec.describe WebhooksController, type: :controller do
       end
 
       let(:payload) do
-        from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request.json")))
+        from_fixture = json_fixture("pull_request")
         from_fixture["action"] = action
         from_fixture["pull_request"]["base"]["ref"] = merge_base
         from_fixture
@@ -67,7 +67,7 @@ RSpec.describe WebhooksController, type: :controller do
   end
 
   describe "POST issue_comment" do
-    let(:payload) { JSON.load(File.open(Rails.root.join("spec", "fixtures", "issue_comment.json"))) }
+    let(:payload) { json_fixture("issue_comment") }
 
     it "creates a new ReceiveIssueCommentEvent job" do
       expect { post :issue_comment, body: JSON.dump(payload) }.to change(ReceiveIssueCommentEvent.jobs, :size).by(1)

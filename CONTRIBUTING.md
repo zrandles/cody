@@ -40,6 +40,17 @@ want to respond to first. Then take the sample payload from the GitHub
 documentation and begin writing tests that stub out the incoming requests with
 the example payload.
 
+### Rubocop
+
+Code style is enforced in PRs with Rubocop. You can check out the repo's config
+in the `.rubocop.yml` file.
+
+When developing locally, please run Rubocop on your code before submitting PRs.
+It's also a good idea to set up integration with your editor so you have
+continuous feedback.
+
+PRs with style violations will not be accepted.
+
 ## Resources
 
 * [GitHub API documentation](https://developer.github.com/v3/)

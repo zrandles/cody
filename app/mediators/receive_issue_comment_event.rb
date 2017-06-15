@@ -9,6 +9,8 @@ class ReceiveIssueCommentEvent
       self.approval_comment
     elsif comment_rebuild_reviews?(comment)
       self.rebuild_reviews
+    elsif directives = comment_replace?(comment)
+      replace_reviewer(directives)
     end
   end
 
@@ -25,44 +27,34 @@ class ReceiveIssueCommentEvent
     # Do not process approval comments on child PRs
     return if pr.parent_pull_request.present?
 
-    reviewers = pr.pending_reviews
-
-    comment_author = @payload["sender"]["login"]
-    return unless reviewers.map(&:downcase).include?(comment_author.downcase)
-
     comment = @payload["comment"]["body"]
     return unless comment_affirmative?(comment)
 
-    reviewers.delete_if { |login| login.downcase == comment_author.downcase }
-    pr.pending_reviews = reviewers
-    pr.completed_reviews << comment_author
-    pr.save!
+    comment_author = @payload["sender"]["login"]
+    reviewer = pr.reviewers.find_by(login: comment_author)
+    return unless reviewer.present?
 
-    github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
-    pull_resource = github.pull_request(@payload["repository"]["full_name"], @payload["issue"]["number"])
-    pr_sha = pull_resource.head.sha
+    reviewer.approve!
 
-    if pr.pending_reviews.none?
-      github.create_status(
-        @payload["repository"]["full_name"],
-        pr_sha,
-        "success",
-        context: "code-review/cody",
-        description: "Code review complete"
-      )
-
+    if pr.reviewers.pending_review.empty?
       pr.status = "approved"
       pr.save!
+      pr.update_status
     end
 
     pr.assign_reviewers
   end
 
   def rebuild_reviews
-    github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
-    pull_request = github.pull_request(@payload["repository"]["full_name"], @payload["issue"]["number"])
+    github = Octokit::Client.new(
+      access_token: Rails.application.secrets.github_access_token
+    )
+    pull_request = github.pull_request(
+      @payload["repository"]["full_name"],
+      @payload["issue"]["number"]
+    )
 
-    CreateOrUpdatePullRequest.new.perform(pull_request, skip_review_rules: true)
+    CreateOrUpdatePullRequest.new.perform(pull_request)
   end
 
   # Checks if the given string can be taken as an affirmative review.
@@ -78,6 +70,8 @@ class ReceiveIssueCommentEvent
   #
   # Returns true if the comment is affirmative; false otherwise.
   def comment_affirmative?(comment)
+    return true if comment == "cody approve"
+
     phrases = %w(
       lgtm
       looks\s+good(?:\s+to\s+me)?
@@ -103,6 +97,35 @@ class ReceiveIssueCommentEvent
   end
 
   def comment_rebuild_reviews?(comment)
-    comment == "!rebuild-reviews"
+    comment == "!rebuild-reviews" ||
+      comment == "cody rebuild"
+  end
+
+  def comment_replace?(comment)
+    return false unless comment =~ /^cody\s+r(eplace)?\s+(?<directives>.*)$/
+
+    directives = $LAST_MATCH_INFO[:directives]
+    return false unless directives.match?(/([A-Za-z0-9_-]+)=([A-Za-z0-9_-]+)/)
+    directives
+  end
+
+  def replace_reviewer(directives)
+    pr = PullRequest.pending_review.find_by(
+      number: @payload["issue"]["number"],
+      repository: @payload["repository"]["full_name"]
+    )
+    return false unless pr.present?
+
+    directives.scan(/([A-Za-z0-9_-]+)=([A-Za-z0-9_-]+)/).each do |code, login|
+      reviewer = pr.generated_reviewers
+        .joins(:review_rule)
+        .find_by(review_rules: { short_code: code })
+
+      next unless reviewer.present?
+
+      next unless reviewer.review_rule.possible_reviewer?(login)
+
+      reviewer.update!(login: login)
+    end
   end
 end

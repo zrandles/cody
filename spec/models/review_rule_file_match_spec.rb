@@ -25,7 +25,7 @@ RSpec.describe ReviewRuleFileMatch, type: :model do
     end
 
     let(:pull_request_files_body) do
-      fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request_files.json")))
+      fixture = json_fixture("pull_request_files")
 
       fixture[0]["filename"] = filename
       JSON.dump(fixture)
@@ -49,7 +49,7 @@ RSpec.describe ReviewRuleFileMatch, type: :model do
 
     context "when several of the filenames match" do
       let(:pull_request_files_body) do
-        fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request_files.json")))
+        fixture = json_fixture("pull_request_files")
 
         fixture[0]["filename"] = filename
 

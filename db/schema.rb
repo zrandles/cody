@@ -10,37 +10,50 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170417175545) do
+ActiveRecord::Schema.define(version: 20170613051400) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "pull_requests", force: :cascade do |t|
-    t.string   "status"
-    t.string   "number"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.string   "pending_reviews"
-    t.string   "completed_reviews"
-    t.string   "repository"
-    t.integer  "parent_pull_request_id"
-    t.index ["parent_pull_request_id"], name: "index_pull_requests_on_parent_pull_request_id", using: :btree
-  end
-
-  create_table "review_rules", force: :cascade do |t|
-    t.string   "name"
-    t.string   "type"
-    t.string   "file_match"
-    t.string   "reviewer"
+  create_table "pull_requests", id: :serial, force: :cascade do |t|
+    t.string "status"
+    t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string   "repository"
+    t.string "pending_reviews"
+    t.string "completed_reviews"
+    t.string "repository"
+    t.integer "parent_pull_request_id"
+    t.index ["parent_pull_request_id"], name: "index_pull_requests_on_parent_pull_request_id"
   end
 
-  create_table "settings", force: :cascade do |t|
+  create_table "review_rules", id: :serial, force: :cascade do |t|
+    t.string "name"
+    t.string "type"
+    t.string "file_match"
+    t.string "reviewer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "repository"
+    t.string "short_code"
+  end
+
+  create_table "reviewers", force: :cascade do |t|
+    t.string "login"
+    t.string "status"
+    t.text "context"
+    t.bigint "review_rule_id"
+    t.bigint "pull_request_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pull_request_id"], name: "index_reviewers_on_pull_request_id"
+    t.index ["review_rule_id"], name: "index_reviewers_on_review_rule_id"
+  end
+
+  create_table "settings", id: :serial, force: :cascade do |t|
     t.string "key"
     t.string "value"
-    t.index ["key", "value"], name: "index_settings_on_key_and_value", unique: true, using: :btree
+    t.index ["key", "value"], name: "index_settings_on_key_and_value", unique: true
   end
 
 end

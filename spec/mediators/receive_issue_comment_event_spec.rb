@@ -1,14 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe ReceiveIssueCommentEvent do
+  let!(:pr) { FactoryGirl.create :pull_request, status: "pending_review" }
+
   let(:reviewer) { "aergonaut" }
 
-  let(:pending_reviews) { [reviewer] }
-
-  let!(:pr) { FactoryGirl.create :pull_request, status: "pending_review", pending_reviews: pending_reviews }
-
   let(:payload) do
-    from_fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "issue_comment.json")))
+    from_fixture = json_fixture("issue_comment")
     from_fixture["issue"]["number"] = pr.number
     from_fixture["sender"]["login"] = sender
     from_fixture["comment"]["body"] = comment
@@ -28,6 +26,9 @@ RSpec.describe ReceiveIssueCommentEvent do
         headers: { "Content-Type" => "application/json" }
       )
       stub_request(:patch, %r{https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/issues/\d+})
+
+      FactoryGirl.create(:reviewer, login: reviewer, pull_request: pr)
+
       job.perform(payload)
     end
 
@@ -40,8 +41,8 @@ RSpec.describe ReceiveIssueCommentEvent do
         context "and they approve" do
           it "moves them into the completed_reviews list" do
             pr.reload
-            expect(pr.pending_reviews).to_not include(reviewer)
-            expect(pr.completed_reviews).to include(sender)
+            expect(pr.reviewers.pending_review.map(&:login)).to_not include(reviewer)
+            expect(pr.reviewers.completed_review.map(&:login)).to include(sender)
           end
 
           context "and they are the last approver" do
@@ -54,26 +55,44 @@ RSpec.describe ReceiveIssueCommentEvent do
             end
           end
 
-          context "but their username has different capitalization than what we recorded in the reviews list" do
-            let(:sender) { "AeRgOnAuT" }
-
-            it "moves them into the completed_reviews list" do
-              pr.reload
-              expect(pr.pending_reviews).to_not include(reviewer)
-              expect(pr.completed_reviews).to include(sender)
-            end
-          end
-
           context "and they approve with a literal emoji" do
             let(:comment) { "👍" }
 
             it "moves them into the completed_reviews list" do
               pr.reload
-              expect(pr.pending_reviews).to_not include(reviewer)
-              expect(pr.completed_reviews).to include(sender)
+              expect(pr.reviewers.pending_review.map(&:login)).to_not include(reviewer)
+              expect(pr.reviewers.completed_review.map(&:login)).to include(sender)
             end
           end
         end
+      end
+    end
+  end
+
+  describe "#comment_replace" do
+    let(:comment) { "cody replace foo=BrentW bar=mrpasquini" }
+
+    let(:rule) { FactoryGirl.create :review_rule, short_code: "foo", reviewer: acceptable_reviewer }
+
+    before do
+      FactoryGirl.create :reviewer, review_rule: rule, pull_request: pr, login: "aergonaut"
+    end
+
+    context "when BrentW is a possible reviewer for the rule" do
+      let(:acceptable_reviewer) { "BrentW" }
+
+      it "replaces aergonaut with BrentW" do
+        foo_reviewer = pr.reviewers.find_by(review_rule_id: rule.id)
+        expect { job.perform(payload) }.to change { foo_reviewer.reload.login }.from("aergonaut").to("BrentW")
+      end
+    end
+
+    context "when BrentW is not a possible reviewer for the rule" do
+      let(:acceptable_reviewer) { "octocat" }
+
+      it "does not change the reviewer" do
+        foo_reviewer = pr.reviewers.find_by(review_rule_id: rule.id)
+        expect { job.perform(payload) }.to_not change { foo_reviewer.reload.login }
       end
     end
   end

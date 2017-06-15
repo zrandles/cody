@@ -26,7 +26,7 @@ RSpec.describe ReviewRuleDiffMatch, type: :model do
     end
 
     let(:pull_request_files_body) do
-      fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request_files.json")))
+      fixture = json_fixture("pull_request_files")
 
       fixture[0]["filename"] = filename
       fixture[0]["patch"] = patch
@@ -52,7 +52,7 @@ RSpec.describe ReviewRuleDiffMatch, type: :model do
 
     context "when several of the patches match" do
       let(:pull_request_files_body) do
-        fixture = JSON.load(File.open(Rails.root.join("spec", "fixtures", "pull_request_files.json")))
+        fixture = json_fixture("pull_request_files")
 
         fixture[0]["filename"] = filename
 

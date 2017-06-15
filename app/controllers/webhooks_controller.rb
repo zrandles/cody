@@ -1,10 +1,14 @@
 class WebhooksController < ApplicationController
+  # rubocop:disable Metrics/CyclomaticComplexity
   def pull_request
-    body = JSON.load(request.body)
+    body = JSON.parse(request.body.read)
 
     senders_filter = Setting.lookup("senders_filter")
     if senders_filter.present?
-      policy = ExclusionPolicy.new(senders_filter, Setting.lookup("senders_filter_policy"))
+      policy = ExclusionPolicy.new(
+        senders_filter,
+        Setting.lookup("senders_filter_policy")
+      )
       unless policy.permitted?(body["sender"]["login"])
         head :ok
         return
@@ -13,7 +17,10 @@ class WebhooksController < ApplicationController
 
     branch_filter = Setting.lookup("branch_filter")
     if branch_filter.present?
-      policy = ExclusionPolicy.new(branch_filter, Setting.lookup("branch_filter_policy"))
+      policy = ExclusionPolicy.new(
+        branch_filter,
+        Setting.lookup("branch_filter_policy")
+      )
       unless policy.permitted?(body["pull_request"]["base"]["ref"])
         head :ok
         return
@@ -21,14 +28,17 @@ class WebhooksController < ApplicationController
     end
 
     if body["action"] == "opened" || body["action"] == "synchronize"
-      ReceivePullRequestEvent.perform_async(body.slice("action", "number", "pull_request", "repository"))
+      ReceivePullRequestEvent.perform_async(
+        body.slice("action", "number", "pull_request", "repository")
+      )
     end
 
     head :accepted
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def issue_comment
-    body = JSON.load(request.body)
+    body = JSON.parse(request.body.read)
 
     if body.key?("zen")
       head :ok

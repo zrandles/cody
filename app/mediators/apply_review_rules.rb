@@ -1,47 +1,45 @@
 class ApplyReviewRules
-  def perform(pull_request_hash)
-    rules = ReviewRule.for_repository(pull_request_hash["base"]["repo"]["full_name"])
+  attr_reader :pr, :pull_request_hash
 
-    return if rules.empty?
+  def initialize(pr, pull_request_hash)
+    @pr = pr
+    @pull_request_hash = pull_request_hash
+  end
 
-    added_reviewers = {}
+  def perform
+    # Quit if there aren't any rules for this repo
+    ReviewRule.apply(pr, pull_request_hash)
 
-    rules.each do |rule|
-      result = rule.apply(pull_request_hash)
-      if result.success?
-        added_reviewers[rule.name] = result
-      end
+    reviewers = pr.generated_reviewers
+    return if reviewers.empty?
+
+    addendum = <<~EOF
+      ## Generated Reviewers
+
+    EOF
+
+    reviewers.each do |reviewer|
+      addendum << reviewer.addendum
     end
 
-    return if added_reviewers.empty?
-
-    addendum = <<-EOF
-## Generated Reviewers
-
-EOF
-
-    added_reviewers.each do |rule_name, result|
-      s = <<-EOF
-### #{rule_name}
-
-- [ ] @#{result.reviewer}
-#{result.context}
-
-EOF
-      addendum << s
-    end
-
+    # Drop existing Generated Reviewers section and replace with new one
     old_body = pull_request_hash["body"]
-    new_body = old_body + "\n\n" + addendum
+    prelude, _ = old_body.split(ReviewRule::GENERATED_REVIEWERS_REGEX, 2)
 
-    github = Octokit::Client.new(access_token: Rails.application.secrets.github_access_token)
+    new_body = prelude.rstrip + "\n\n" + addendum
+
+    github = Octokit::Client.new(
+      access_token: Rails.application.secrets.github_access_token
+    )
+
     github.update_pull_request(
       pull_request_hash["base"]["repo"]["full_name"],
       pull_request_hash["number"],
       body: new_body
     )
 
-    labels = added_reviewers.keys
+    # Update labels
+    labels = reviewers.map { |reviewer| reviewer.review_rule.name }.uniq
     github.add_labels_to_an_issue(
       pull_request_hash["base"]["repo"]["full_name"],
       pull_request_hash["number"],
