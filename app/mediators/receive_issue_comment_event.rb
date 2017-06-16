@@ -4,6 +4,13 @@ class ReceiveIssueCommentEvent
   def perform(payload)
     @payload = payload
 
+    Raven.user_context(
+      username: @payload["sender"]["login"]
+    )
+    Raven.tags_context(
+      event: "issue_comment"
+    )
+
     comment = @payload["comment"]["body"]
     if comment_affirmative?(comment)
       self.approval_comment
