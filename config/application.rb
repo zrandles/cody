@@ -23,7 +23,7 @@ if ENV["RAVEN_DSN"]
 
   Raven.configure do |config|
     config.dsn = ENV["RAVEN_DSN"]
-    config.environments = ["production"]
+    config.environments = ["production", "staging"]
     config.current_environment = sentry_environment
   end
 end
