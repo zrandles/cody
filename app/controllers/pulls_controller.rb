@@ -1,6 +1,5 @@
 class PullsController < ApplicationController
   include RequiresAuthentication
 
-  def index
-  end
+  def index; end
 end

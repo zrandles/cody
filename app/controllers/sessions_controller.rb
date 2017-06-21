@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
     else
       flash[:danger] = "You could not be authenticated"
     end
-    destination = session[:return_to] || responses_path
+    destination = session[:return_to] || pulls_path
     redirect_to destination
   end
 
@@ -27,7 +27,7 @@ class SessionsController < ApplicationController
 
   def user_from_omniauth
     auth = request.env["omniauth.auth"]
-    User.find_or_create_by(github_id: auth.uid) do |user|
+    User.find_or_create_by(uid: auth.uid) do |user|
       user.login = auth.info.nickname
       user.email = auth.info.email
       user.name = auth.info.name

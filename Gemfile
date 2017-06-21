@@ -53,6 +53,10 @@ gem 'faraday-http-cache'
 
 gem 'omniauth-github'
 
+gem 'aws-sdk'
+
+gem 'jwt'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -71,6 +75,8 @@ group :development do
   gem 'spring'
 
   gem 'netrc'
+
+  gem 'rubocop'
 end
 
 group :test do

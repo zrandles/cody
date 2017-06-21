@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   resources :pulls, only: %i(index)
   resources :pull, only: %i(show update), controller: :pulls
 
-  resources :sessions
+  resource :session, only: %i(new create destroy)
 
   get '/auth/:provider/callback' => 'sessions#create'
 
