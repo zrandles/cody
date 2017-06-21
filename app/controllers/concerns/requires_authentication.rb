@@ -12,15 +12,14 @@ module RequiresAuthentication
   end
 
   def current_user
-    @current_user ||=
-      if session[:current_user_id].present?
-        user = User.find_by(id: session[:current_user_id])
-        if user.present?
-          user
-        else
-          session[:current_user_id] = nil
-          nil
-        end
+    if session[:user_id].present?
+      user = User.find_by(id: session[:user_id])
+      if user.present?
+        Current.user = user
+      else
+        session[:user_id] = nil
+        Current.user = nil
       end
+    end
   end
 end
