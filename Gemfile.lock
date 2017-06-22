@@ -81,6 +81,9 @@ GEM
       faraday (~> 0.8)
     globalid (0.4.0)
       activesupport (>= 4.2.0)
+    graphiql-rails (1.4.2)
+      rails
+    graphql (1.6.4)
     haml (5.0.1)
       temple (>= 0.8.0)
       tilt
@@ -108,6 +111,18 @@ GEM
       thor (>= 0.14, < 2.0)
     json (1.8.6)
     jwt (1.5.6)
+    kaminari (1.0.1)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.0.1)
+      kaminari-activerecord (= 1.0.1)
+      kaminari-core (= 1.0.1)
+    kaminari-actionview (1.0.1)
+      actionview
+      kaminari-core (= 1.0.1)
+    kaminari-activerecord (1.0.1)
+      activerecord
+      kaminari-core (= 1.0.1)
+    kaminari-core (1.0.1)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     mail (2.6.6)
@@ -303,10 +318,13 @@ DEPENDENCIES
   dotenv
   factory_girl_rails
   faraday-http-cache
+  graphiql-rails
+  graphql
   haml-rails
   jbuilder (~> 2.0)
   jquery-rails
   jwt
+  kaminari
   netrc
   octokit
   omniauth-github
