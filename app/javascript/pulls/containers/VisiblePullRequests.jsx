@@ -7,7 +7,8 @@ const pullRequestsQuery = gql`
   query {
     pullRequests(repository: "aergonaut/testrepo", status: pending_review) {
       number,
-      repository
+      repository,
+      status
     }
   }
 `;
