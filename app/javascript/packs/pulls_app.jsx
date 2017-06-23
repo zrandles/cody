@@ -1,29 +1,32 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { createStore } from "redux";
+import {
+  ApolloClient,
+  ApolloProvider,
+  createNetworkInterface
+} from "react-apollo";
 import VisiblePullRequests from "pulls/containers/VisiblePullRequests";
-import { Provider } from "react-redux";
 import { AppContainer } from "react-hot-loader";
 
-let initialState = {
-  pull_requests: [
-    {
-      number: "42"
-    },
-    {
-      number: "69"
+const csrfToken = document.getElementsByName("csrf-token")[0].content;
+const client = new ApolloClient({
+  networkInterface: createNetworkInterface({
+    uri: "/graphql",
+    opts: {
+      credentials: "same-origin",
+      headers: {
+        "X-CSRF-Token": csrfToken
+      }
     }
-  ]
-};
-
-let store = createStore(state => state, initialState);
+  })
+});
 
 const hotRender = Component => {
   ReactDOM.render(
     <AppContainer>
-      <Provider store={store}>
+      <ApolloProvider client={client}>
         <Component />
-      </Provider>
+      </ApolloProvider>
     </AppContainer>,
     document.getElementById("pull_request_mount")
   );

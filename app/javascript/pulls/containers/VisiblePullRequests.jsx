@@ -1,13 +1,15 @@
 // @flow
 
 import PullRequestList from "../components/PullRequestList";
-import { type Props as PullRequestProps } from "../components/PullRequest";
-import { connect } from "react-redux";
+import { gql, graphql } from "react-apollo";
 
-const mapStateToProps = ({
-  pull_requests
-}: {
-  pull_requests: Array<PullRequestProps>
-}) => ({ pull_requests });
+const pullRequestsQuery = gql`
+  query {
+    pullRequests(repository: "aergonaut/testrepo", status: pending_review) {
+      number,
+      repository
+    }
+  }
+`;
 
-export default connect(mapStateToProps)(PullRequestList);
+export default graphql(pullRequestsQuery)(PullRequestList);

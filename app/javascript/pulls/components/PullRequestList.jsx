@@ -4,14 +4,23 @@ import React from "react";
 import PullRequest, { type Props as PullRequestProps } from "./PullRequest";
 
 type Props = {
-  pull_requests: Array<PullRequestProps>
+  data: {
+    pullRequests: Array<PullRequestProps>
+  }
 };
 
-const PullRequestList = ({ pull_requests }: Props) =>
-  <div>
-    {pull_requests.map(pull_request => {
-      return <PullRequest key={pull_request.number} {...pull_request} />;
-    })}
-  </div>;
+const PullRequestList = ({ data }: Props) => {
+  if (data.networkStatus === 1) {
+    return <div>Loading</div>;
+  }
+
+  return (
+    <div>
+      {data.pullRequests.map(pull_request => {
+        return <PullRequest key={pull_request.number} {...pull_request} />;
+      })}
+    </div>
+  );
+};
 
 export default PullRequestList;
