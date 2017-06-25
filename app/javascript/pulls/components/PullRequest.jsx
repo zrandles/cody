@@ -2,14 +2,10 @@
 
 import React from "react";
 import cn from "lib/cn";
+import { type PullRequestType } from "../types";
+import { Link } from "react-router-dom";
 
-export type Props = {
-  number: string,
-  repository: string,
-  status: "pending_review" | "approved"
-};
-
-const PullRequest = ({ number, repository, status }: Props) =>
+const PullRequest = ({ number, repository, status }: PullRequestType) =>
   <div className={cn("-pull-request")}>
     <div>
       <div className="dib pv1 f4 code near-black lh-copy">
@@ -19,9 +15,12 @@ const PullRequest = ({ number, repository, status }: Props) =>
         {status}
       </div>
     </div>
-    <a href="#" className={cn("-pull-request--more more-button")}>
+    <Link
+      to={`/repos/${repository}/pull/${number}`}
+      className={cn("-pull-request--more more-button")}
+    >
       &bull; &bull; &bull;
-    </a>
+    </Link>
   </div>;
 
 export default PullRequest;

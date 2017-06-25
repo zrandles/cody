@@ -5,7 +5,7 @@ import {
   ApolloProvider,
   createNetworkInterface
 } from "react-apollo";
-import VisiblePullRequests from "pulls/containers/VisiblePullRequests";
+import App from "pulls/components/App";
 import { AppContainer } from "react-hot-loader";
 
 const csrfToken = document.getElementsByName("csrf-token")[0].content;
@@ -32,12 +32,10 @@ const hotRender = Component => {
   );
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  hotRender(VisiblePullRequests);
-});
+hotRender(App);
 
 if (module.hot) {
-  module.hot.accept("pulls/containers/VisiblePullRequests", () => {
-    hotRender(VisiblePullRequests);
+  module.hot.accept("pulls/components/App", () => {
+    hotRender(App);
   });
 }
