@@ -1,7 +1,6 @@
 // @flow
 
 import React from "react";
-import { type PullRequestType } from "../types";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
@@ -10,8 +9,11 @@ const PullRequestDetail = ({ data: { loading, pullRequest } }: Object) => {
     return <div>Loading</div>;
   }
   return (
-    <div>
-      {pullRequest.number}
+    <div className="pa4 mw6 center br2 ba b--light-gray mt4 bg-white">
+      <h1 className="f3 code near-black mt0">
+        {`${pullRequest.repository}#${pullRequest.number}`}
+      </h1>
+      <span className="code gray f4">{pullRequest.status}</span>
     </div>
   );
 };

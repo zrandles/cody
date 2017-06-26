@@ -10,8 +10,7 @@ Rails.application.routes.draw do
   post '/webhooks/integration' => 'webhooks#integration'
 
   # Mirror GitHub's URL structure for Pull Requests
-  resources :pulls, only: %i(index)
-  resources :pull, only: %i(show update), controller: :pulls
+  get '/repos/:owner/:repo/pull/:number' => 'pulls#index'
 
   resource :session, only: %i(new create destroy)
 
