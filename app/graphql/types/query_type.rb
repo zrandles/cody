@@ -25,4 +25,25 @@ Types::QueryType = GraphQL::ObjectType.define do
         .per(per_page)
     }
   end
+
+  field :repository do
+    type Types::RepositoryType
+    description "Find a given repository by the owner and name"
+    argument :owner, !types.String
+    argument :name, !types.String
+    resolve -> (obj, args, ctx) {
+      OpenStruct.new(owner: args[:owner], name: args[:name])
+    }
+  end
+
+  field :viewer do
+    type Types::UserType
+    description "The currently authenticated user"
+    resolve -> (obj, args, ctx) {
+      Current.user
+    }
+  end
+
+  field :node, GraphQL::Relay::Node.field
+  field :nodes, GraphQL::Relay::Node.plural_field
 end

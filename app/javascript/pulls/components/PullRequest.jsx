@@ -4,6 +4,7 @@ import React from "react";
 import cn from "lib/cn";
 import { type PullRequestType } from "../types";
 import { Link } from "react-router-dom";
+import gql from "graphql-tag";
 
 const PullRequest = ({ number, repository, status }: PullRequestType) =>
   <div className={cn("-pull-request")}>
@@ -22,5 +23,16 @@ const PullRequest = ({ number, repository, status }: PullRequestType) =>
       &bull; &bull; &bull;
     </Link>
   </div>;
+
+PullRequest.fragments = {
+  pullRequest: gql`
+    fragment PullRequest_pullRequest on PullRequest {
+      id,
+      repository,
+      number,
+      status
+    }
+  `
+};
 
 export default PullRequest;

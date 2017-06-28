@@ -1,4 +1,4 @@
-class ReviewRule < ActiveRecord::Base
+class ReviewRule < ApplicationRecord
   GENERATED_REVIEWERS_REGEX = /^\s*#*\s*Generated\s*Reviewers\s*$/
 
   validates :name, presence: true

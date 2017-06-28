@@ -2,38 +2,36 @@
 
 import React from "react";
 import PullRequest from "./PullRequest";
-import { type PullRequestType } from "../types";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
 
-type Props = {
-  data: {
-    pullRequests: Array<PullRequestType>
-  }
-};
-
-const PullRequestList = ({ data }: Props) => {
+const PullRequestList = ({ data }: Object) => {
   if (data.networkStatus === 1) {
     return <div>Loading</div>;
   }
 
   return (
     <div>
-      {data.pullRequests.map(pull_request => {
-        return <PullRequest key={pull_request.number} {...pull_request} />;
+      {data.repository.pullRequests.edges.map(edge => {
+        const pullRequest = edge.node;
+        return <PullRequest key={pullRequest.id} {...pullRequest} />;
       })}
     </div>
   );
 };
 
-const pullRequestsQuery = gql`
-  query GetPullRequests {
-    pullRequests(repository: "aergonaut/testrepo", status: pending_review) {
-      number,
-      repository,
-      status
+PullRequestList.fragments = {
+  repository: gql`
+    fragment PullRequestList_repository on Repository {
+      pullRequests(status: $status) {
+        edges {
+          node {
+            ...PullRequest_pullRequest
+          }
+        }
+      }
     }
-  }
-`;
+    ${PullRequest.fragments.pullRequest}
+  `
+};
 
-export default graphql(pullRequestsQuery)(PullRequestList);
+export default PullRequestList;
