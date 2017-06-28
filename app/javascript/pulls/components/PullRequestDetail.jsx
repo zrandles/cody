@@ -3,6 +3,7 @@
 import React from "react";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
+import PullRequest from "./PullRequest";
 
 const PullRequestDetail = ({ data: { loading, pullRequest } }: Object) => {
   if (loading) {
@@ -18,23 +19,21 @@ const PullRequestDetail = ({ data: { loading, pullRequest } }: Object) => {
   );
 };
 
-const pullRequestQuery = gql`
-  query GetPullRequest($repository: String!, $number: String!) {
-    pullRequest(repository: $repository, number: $number) {
-      number,
-      repository,
-      status
+export default graphql(
+  gql`
+    query PullRequestDetailQuery($repository: String!, $number: String!) {
+      pullRequest(repository: $repository, number: $number) {
+        ...PullRequest_pullRequest
+      }
     }
+    ${PullRequest.fragments.pullRequest}
+  `,
+  {
+    options: ({ match }) => ({
+      variables: {
+        repository: `${match.params.owner}/${match.params.repo}`,
+        number: match.params.number
+      }
+    })
   }
-`;
-
-const withPullRequestData = graphql(pullRequestQuery, {
-  options: props => ({
-    variables: {
-      repository: `${props.match.params.owner}/${props.match.params.repo}`,
-      number: props.match.params.number
-    }
-  })
-});
-
-export default withPullRequestData(PullRequestDetail);
+)(PullRequestDetail);
