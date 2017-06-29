@@ -1,17 +1,46 @@
 // @flow
 
 import React from "react";
-import PullRequest from "./PullRequest";
+import PullRequest, { type PullRequestType } from "./PullRequest";
 import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import type { OperationComponent, QueryProps } from "react-apollo";
 
-const PullRequestList = ({ data }: Object) => {
-  if (data.networkStatus === 1) {
+type RepositoryType = {
+  pullRequests: {
+    edges: Array<PullRequestConnection>
+  }
+};
+
+type PullRequestConnection = {
+  node: PullRequestType
+};
+
+type Response = {
+  repository: RepositoryType
+};
+
+type InputProps = {
+  match: {
+    params: {
+      owner: string,
+      repo: string
+    }
+  }
+};
+
+type Props = {
+  data: Response & QueryProps
+};
+
+const PullRequestList = ({ data: { networkStatus, repository } }: Props) => {
+  if (networkStatus === 1) {
     return <div>Loading</div>;
   }
 
   return (
     <div>
-      {data.repository.pullRequests.edges.map(edge => {
+      {repository.pullRequests.edges.map(edge => {
         const pullRequest = edge.node;
         return <PullRequest key={pullRequest.id} {...pullRequest} />;
       })}
@@ -28,10 +57,34 @@ PullRequestList.fragments = {
             ...PullRequest_pullRequest
           }
         }
+        pageInfo {
+          hasNextPage,
+          endCursor
+        }
       }
     }
     ${PullRequest.fragments.pullRequest}
   `
 };
 
-export default PullRequestList;
+const withData: OperationComponent<Response, InputProps, Props> = graphql(
+  gql`
+    query PullRequestListWithData($owner: String!, $name: String!, $status: String!) {
+      repository(owner: $owner, name: $name) {
+        ...PullRequestList_repository
+      }
+    }
+    ${PullRequestList.fragments.repository}
+  `,
+  {
+    options: ({ match }) => ({
+      variables: {
+        owner: match.params.owner,
+        name: match.params.repo,
+        status: "pending_review"
+      }
+    })
+  }
+);
+
+export default withData(PullRequestList);

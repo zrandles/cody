@@ -2,9 +2,15 @@
 
 import React from "react";
 import cn from "lib/cn";
-import { type PullRequestType } from "../types";
 import { Link } from "react-router-dom";
 import gql from "graphql-tag";
+
+export type PullRequestType = {|
+  id: string,
+  repository: string,
+  number: string,
+  status: string
+|};
 
 const PullRequest = ({ number, repository, status }: PullRequestType) =>
   <div className={cn("-pull-request")}>

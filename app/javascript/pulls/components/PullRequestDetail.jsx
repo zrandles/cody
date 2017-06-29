@@ -3,9 +3,28 @@
 import React from "react";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
-import PullRequest from "./PullRequest";
+import PullRequest, { type PullRequestType } from "./PullRequest";
+import type { OperationComponent, QueryProps } from "react-apollo";
 
-const PullRequestDetail = ({ data: { loading, pullRequest } }: Object) => {
+type Response = {|
+  pullRequest: PullRequestType
+|};
+
+type InputProps = {
+  match: {
+    params: {
+      owner: string,
+      repo: string,
+      number: string
+    }
+  }
+};
+
+type Props = {
+  data: Response & QueryProps
+};
+
+const PullRequestDetail = ({ data: { loading, pullRequest } }: Props) => {
   if (loading) {
     return <div>Loading</div>;
   }
@@ -19,7 +38,7 @@ const PullRequestDetail = ({ data: { loading, pullRequest } }: Object) => {
   );
 };
 
-export default graphql(
+const withData: OperationComponent<Response, InputProps, Props> = graphql(
   gql`
     query PullRequestDetailQuery($repository: String!, $number: String!) {
       pullRequest(repository: $repository, number: $number) {
@@ -36,4 +55,6 @@ export default graphql(
       }
     })
   }
-)(PullRequestDetail);
+);
+
+export default withData(PullRequestDetail);
