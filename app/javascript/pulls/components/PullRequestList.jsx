@@ -39,7 +39,7 @@ const PullRequestList = ({ data: { networkStatus, repository } }: Props) => {
   }
 
   return (
-    <div>
+    <div className="mw7 center">
       {repository.pullRequests.edges.map(edge => {
         const pullRequest = edge.node;
         return <PullRequest key={pullRequest.id} {...pullRequest} />;
@@ -51,7 +51,7 @@ const PullRequestList = ({ data: { networkStatus, repository } }: Props) => {
 PullRequestList.fragments = {
   repository: gql`
     fragment PullRequestList_repository on Repository {
-      pullRequests(status: $status) {
+      pullRequests(status: $status, first: 10, after: $cursor) {
         edges {
           node {
             ...PullRequest_pullRequest
@@ -69,7 +69,7 @@ PullRequestList.fragments = {
 
 const withData: OperationComponent<Response, InputProps, Props> = graphql(
   gql`
-    query PullRequestListWithData($owner: String!, $name: String!, $status: String!) {
+    query PullRequestListWithData($owner: String!, $name: String!, $status: String!, $cursor: String) {
       repository(owner: $owner, name: $name) {
         ...PullRequestList_repository
       }

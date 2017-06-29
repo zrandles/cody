@@ -12,7 +12,7 @@ Types::RepositoryType = GraphQL::ObjectType.define do
     argument :status, types.String
     resolve -> (repository, args, ctx) {
       status = args[:status] || "pending_review"
-      PullRequest.where(repository: "#{repository.owner}/#{repository.name}")
+      PullRequest.where(repository: "#{repository.owner}/#{repository.name}").order("created_at DESC")
     }
   end
 end

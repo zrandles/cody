@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
     else
       flash[:danger] = "You could not be authenticated"
     end
-    destination = session[:return_to] || pulls_path
+    destination = session[:return_to] || root_path
     redirect_to destination
   end
 
