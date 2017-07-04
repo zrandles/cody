@@ -1,0 +1,107 @@
+# An object with an ID.
+interface Node {
+  # ID of the object.
+  id: ID!
+}
+
+# Information about pagination in a connection.
+type PageInfo {
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+}
+
+type PullRequest implements Node {
+  id: ID!
+  number: String
+  repository: String
+  status: String
+}
+
+# The connection type for PullRequest.
+type PullRequestConnection {
+  # A list of edges.
+  edges: [PullRequestEdge]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type PullRequestEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: PullRequest
+}
+
+# The review status of a PullRequest
+enum PullRequestStatus {
+  # Approved
+  approved
+
+  # Pending Review
+  pending_review
+}
+
+# The query root
+type Query {
+  # Fetches an object given its ID.
+  node(
+    # ID of the object.
+    id: ID!
+  ): Node
+
+  # Fetches a list of objects given a list of IDs.
+  nodes(
+    # IDs of the objects.
+    ids: [ID!]!
+  ): [Node]!
+
+  # Find a PullRequest by number
+  pullRequest(repository: String!, number: String!): PullRequest
+
+  # Find PullRequests belonging to a given a repository
+  pullRequests(repository: String!, status: PullRequestStatus!, page: Int, perPage: Int): [PullRequest!]
+
+  # Find a given repository by the owner and name
+  repository(owner: String!, name: String!): Repository
+
+  # The currently authenticated user
+  viewer: User
+}
+
+type Repository implements Node {
+  id: ID!
+  name: String
+  owner: String
+  pullRequests(
+    # Returns the elements in the list that come after the specified global ID.
+    after: String
+
+    # Returns the elements in the list that come before the specified global ID.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    status: String
+  ): PullRequestConnection
+}
+
+type User implements Node {
+  id: ID!
+  login: String!
+  name: String!
+}

@@ -10,6 +10,7 @@ import { AppContainer } from "react-hot-loader";
 
 const csrfToken = document.getElementsByName("csrf-token")[0].content;
 const client = new ApolloClient({
+  addTypename: true,
   networkInterface: createNetworkInterface({
     uri: "/graphql",
     opts: {

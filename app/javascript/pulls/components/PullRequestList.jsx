@@ -7,8 +7,15 @@ import { graphql } from "react-apollo";
 import type { OperationComponent, QueryProps } from "react-apollo";
 
 type RepositoryType = {
+  id: string,
+  owner: string,
+  name: string,
   pullRequests: {
-    edges: Array<PullRequestConnection>
+    edges: Array<PullRequestConnection>,
+    pageInfo: {
+      hasNextPage: boolean,
+      endCursor: string
+    }
   }
 };
 
@@ -30,11 +37,16 @@ type InputProps = {
 };
 
 type Props = {
-  data: Response & QueryProps
+  data: Response & QueryProps,
+  loadMore: () => mixed
 };
 
-const PullRequestList = ({ data: { networkStatus, repository } }: Props) => {
-  if (networkStatus === 1) {
+const PullRequestList = ({
+  data: { loading, repository },
+  loadMore
+}: Props) => {
+  console.log(repository);
+  if (loading) {
     return <div>Loading</div>;
   }
 
@@ -44,6 +56,9 @@ const PullRequestList = ({ data: { networkStatus, repository } }: Props) => {
         const pullRequest = edge.node;
         return <PullRequest key={pullRequest.id} {...pullRequest} />;
       })}
+      <div onClick={loadMore}>
+        More
+      </div>
     </div>
   );
 };
@@ -51,6 +66,9 @@ const PullRequestList = ({ data: { networkStatus, repository } }: Props) => {
 PullRequestList.fragments = {
   repository: gql`
     fragment PullRequestList_repository on Repository {
+      id,
+      owner,
+      name,
       pullRequests(status: $status, first: 10, after: $cursor) {
         edges {
           node {
@@ -83,7 +101,47 @@ const withData: OperationComponent<Response, InputProps, Props> = graphql(
         name: match.params.repo,
         status: "pending_review"
       }
-    })
+    }),
+    props: ({ data }) => {
+      if (data != null) {
+        let myData = data;
+
+        return {
+          data: myData,
+          loadMore: () => {
+            return myData.fetchMore({
+              variables: {
+                owner: myData.repository.owner,
+                name: myData.repository.name,
+                curosr: myData.repository.pullRequests.pageInfo.endCursor
+              },
+              updateQuery: (previousResult, { fetchMoreResult }) => {
+                const newEdges = fetchMoreResult.repository.pullRequests.edges;
+                const pageInfo =
+                  fetchMoreResult.repository.pullRequests.pageInfo;
+
+                let nextResult = {
+                  ...previousResult,
+                  repository: {
+                    pullRequests: {
+                      edges: [
+                        ...previousResult.repository.pullRequests.edges,
+                        ...newEdges
+                      ],
+                      pageInfo
+                    }
+                  }
+                };
+
+                return nextResult;
+              }
+            });
+          }
+        };
+      } else {
+        throw new Error("PullRequestList used on a non-Query type query!");
+      }
+    }
   }
 );
 
