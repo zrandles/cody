@@ -3,37 +3,15 @@
 import React from "react";
 import PullRequestList from "./PullRequestList";
 import PullRequestDetail from "./PullRequestDetail";
+import makeEnvironment from "../makeEnvironment";
 import { QueryRenderer, graphql } from "react-relay";
-import { Network, Environment, RecordSource, Store } from "relay-runtime";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 const csrfToken = document
   .getElementsByName("csrf-token")[0]
   .getAttribute("content");
 
-function fetchQuery(operation, variables) {
-  return fetch("/graphql", {
-    method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": typeof csrfToken == "string" ? csrfToken : "",
-      "content-type": "application/json"
-    },
-    body: JSON.stringify({
-      query: operation.text, // GraphQL text from input
-      variables
-    })
-  }).then(response => {
-    return response.json();
-  });
-}
-
-const network = Network.create(fetchQuery);
-
-const environment = new Environment({
-  network,
-  store: new Store(new RecordSource())
-});
+const environment = makeEnvironment(csrfToken);
 
 const App = () =>
   <BrowserRouter>

@@ -13,6 +13,11 @@ export type PullRequestDetail_pullRequest = {|
   +repository: ?string;
   +number: ?string;
   +status: ?string;
+  +reviewers: ?{|
+    +edges: ?$ReadOnlyArray<?{|
+      +node: ?{| |};
+    |}>;
+  |};
 |};
 */
 
@@ -49,6 +54,44 @@ const fragment /*: ConcreteFragment*/ = {
       "alias": null,
       "args": null,
       "name": "status",
+      "storageKey": null
+    },
+    {
+      "kind": "LinkedField",
+      "alias": null,
+      "args": null,
+      "concreteType": "ReviewerConnection",
+      "name": "reviewers",
+      "plural": false,
+      "selections": [
+        {
+          "kind": "LinkedField",
+          "alias": null,
+          "args": null,
+          "concreteType": "ReviewerEdge",
+          "name": "edges",
+          "plural": true,
+          "selections": [
+            {
+              "kind": "LinkedField",
+              "alias": null,
+              "args": null,
+              "concreteType": "Reviewer",
+              "name": "node",
+              "plural": false,
+              "selections": [
+                {
+                  "kind": "FragmentSpread",
+                  "name": "Reviewer_reviewer",
+                  "args": null
+                }
+              ],
+              "storageKey": null
+            }
+          ],
+          "storageKey": null
+        }
+      ],
       "storageKey": null
     }
   ],

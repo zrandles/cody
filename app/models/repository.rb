@@ -7,7 +7,6 @@ class Repository
   end
 
   def pull_requests
-    binding.pry
     PullRequest.where(repository: "#{owner}/#{name}")
   end
 end

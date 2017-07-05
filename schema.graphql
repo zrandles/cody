@@ -23,6 +23,20 @@ type PullRequest implements Node {
   id: ID!
   number: String
   repository: String
+  reviewers(
+    # Returns the elements in the list that come after the specified global ID.
+    after: String
+
+    # Returns the elements in the list that come before the specified global ID.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    status: String
+  ): ReviewerConnection
   status: String
 }
 
@@ -121,6 +135,30 @@ type RepositoryEdge {
 
   # The item at the end of the edge.
   node: Repository
+}
+
+type Reviewer implements Node {
+  id: ID!
+  login: String
+  status: String
+}
+
+# The connection type for Reviewer.
+type ReviewerConnection {
+  # A list of edges.
+  edges: [ReviewerEdge]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type ReviewerEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: Reviewer
 }
 
 type User implements Node {

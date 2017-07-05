@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 851db2f5636450c7e87403b6f0528d15
+ * @relayHash 4983d5164b9d00becdcb7bda51faadd2
  */
 
 /* eslint-disable */
@@ -41,6 +41,20 @@ fragment PullRequestDetail_pullRequest on PullRequest {
   id
   repository
   number
+  status
+  reviewers {
+    edges {
+      node {
+        ...Reviewer_reviewer
+        id
+      }
+    }
+  }
+}
+
+fragment Reviewer_reviewer on Reviewer {
+  id
+  login
   status
 }
 */
@@ -232,6 +246,60 @@ const batch /*: ConcreteBatch*/ = {
                     "args": null,
                     "name": "status",
                     "storageKey": null
+                  },
+                  {
+                    "kind": "LinkedField",
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "ReviewerConnection",
+                    "name": "reviewers",
+                    "plural": false,
+                    "selections": [
+                      {
+                        "kind": "LinkedField",
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "ReviewerEdge",
+                        "name": "edges",
+                        "plural": true,
+                        "selections": [
+                          {
+                            "kind": "LinkedField",
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "Reviewer",
+                            "name": "node",
+                            "plural": false,
+                            "selections": [
+                              {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "args": null,
+                                "name": "id",
+                                "storageKey": null
+                              },
+                              {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "args": null,
+                                "name": "login",
+                                "storageKey": null
+                              },
+                              {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "args": null,
+                                "name": "status",
+                                "storageKey": null
+                              }
+                            ],
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
                   }
                 ],
                 "storageKey": null
@@ -258,7 +326,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "query App_Detail_Query(\n  $owner: String!\n  $name: String!\n  $number: String!\n) {\n  viewer {\n    repository(owner: $owner, name: $name) {\n      pullRequest(number: $number) {\n        ...PullRequestDetail_pullRequest\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment PullRequestDetail_pullRequest on PullRequest {\n  id\n  repository\n  number\n  status\n}\n"
+  "text": "query App_Detail_Query(\n  $owner: String!\n  $name: String!\n  $number: String!\n) {\n  viewer {\n    repository(owner: $owner, name: $name) {\n      pullRequest(number: $number) {\n        ...PullRequestDetail_pullRequest\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment PullRequestDetail_pullRequest on PullRequest {\n  id\n  repository\n  number\n  status\n  reviewers {\n    edges {\n      node {\n        ...Reviewer_reviewer\n        id\n      }\n    }\n  }\n}\n\nfragment Reviewer_reviewer on Reviewer {\n  id\n  login\n  status\n}\n"
 };
 
 module.exports = batch;

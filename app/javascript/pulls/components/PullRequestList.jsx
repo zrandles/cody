@@ -3,7 +3,7 @@
 import React from "react";
 import PullRequest from "./PullRequest";
 import { createFragmentContainer, graphql } from "react-relay";
-import { type PullRequestList_repository } from "./__generated__/PullRequestList_repository.graphql";
+import type { PullRequestList_repository } from "./__generated__/PullRequestList_repository.graphql";
 
 const PullRequestList = ({
   repository
