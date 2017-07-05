@@ -10,21 +10,22 @@ const PullRequest = ({
 }: {
   pullRequest: PullRequest_pullRequest
 }) =>
-  <div className="pa4 bt bb bw1 br2 b--light-gray flex flex-row justify-between bg-white">
-    <div>
-      <div className="dib pv1 f4 code near-black lh-copy">
+  <div className="level box">
+    <div className="level-left code">
+      <div className="level-item">
         {`${repository}#${number}`}
       </div>
-      <div className="dib pv1 f4 code gray mh3 lh-copy">
+      <div className="level-item">
         {status}
       </div>
     </div>
-    <Link
-      to={`/repos/${repository}/pull/${number}`}
-      className="dib br2 ba b--light-silver pv2 ph3 f5 gray hover-near-black link more-button"
-    >
-      &bull; &bull; &bull;
-    </Link>
+    <div className="level-right">
+      <div className="level-item">
+        <Link to={`/repos/${repository}/pull/${number}`} className="button">
+          &bull; &bull; &bull;
+        </Link>
+      </div>
+    </div>
   </div>;
 
 export default createFragmentContainer(

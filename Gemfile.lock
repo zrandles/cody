@@ -51,6 +51,8 @@ GEM
     aws-sigv4 (1.0.0)
     bindex (0.5.0)
     builder (3.2.3)
+    bulma-rails (0.4.2)
+      sass (~> 3.2)
     byebug (9.0.6)
     coderay (1.1.1)
     coffee-rails (4.2.2)
@@ -79,6 +81,8 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (2.0.0)
       faraday (~> 0.8)
+    font-awesome-sass (4.7.0)
+      sass (>= 3.2)
     globalid (0.4.0)
       activesupport (>= 4.2.0)
     graphiql-rails (1.4.2)
@@ -312,12 +316,14 @@ PLATFORMS
 
 DEPENDENCIES
   aws-sdk
+  bulma-rails
   byebug
   coffee-rails (~> 4.2.0)
   dalli
   dotenv
   factory_girl_rails
   faraday-http-cache
+  font-awesome-sass
   graphiql-rails
   graphql
   haml-rails

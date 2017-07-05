@@ -10,17 +10,20 @@ const PullRequestList = ({
 }: {
   repository: PullRequestList_repository
 }) =>
-  <div className="mw7 center">
-    {repository.pullRequests.edges.map(edge => {
-      return <PullRequest key={edge.node.id} pullRequest={edge.node} />;
-    })}
-  </div>;
+  <section className="section">
+    <div className="container">
+      {repository.pullRequests.edges.map(edge => {
+        return <PullRequest key={edge.node.id} pullRequest={edge.node} />;
+      })}
+    </div>
+  </section>;
 
 export default createFragmentContainer(
   PullRequestList,
   graphql`
     fragment PullRequestList_repository on Repository {
-      pullRequests(first: 10, after: $cursor) @connection(key: "PullRequestList_pullRequests") {
+      pullRequests(first: 10, after: $cursor)
+        @connection(key: "PullRequestList_pullRequests") {
         edges {
           node {
             id

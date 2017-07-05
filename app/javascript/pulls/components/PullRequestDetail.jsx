@@ -11,19 +11,24 @@ const PullRequestDetail = ({
   pullRequest: PullRequestDetail_pullRequest
 }) => {
   return (
-    <div className="mw6 center">
-      <div className="pa4 br2 ba b--light-gray mt4 bg-white">
-        <h1 className="f3 code near-black mt0">
-          {`${pullRequest.repository}#${pullRequest.number}`}
-        </h1>
-        <span className="code gray f4">{pullRequest.status}</span>
+    <section className="section">
+      <div className="container box code">
+        <div className="pa4 br2 ba b--light-gray mt4 bg-white">
+          <h1 className="title code">
+            {`${pullRequest.repository}#${pullRequest.number}`}
+          </h1>
+          <h2 className="subtitle code">
+            {pullRequest.status}
+          </h2>
+        </div>
+        <hr />
+        <div>
+          {pullRequest.reviewers.edges.map(edge => {
+            return <Reviewer key={edge.node.id} reviewer={edge.node} />;
+          })}
+        </div>
       </div>
-      <div className="mt4">
-        {pullRequest.reviewers.edges.map(edge => {
-          return <Reviewer reviewer={edge.node} key={edge.node.id} />;
-        })}
-      </div>
-    </div>
+    </section>
   );
 };
 

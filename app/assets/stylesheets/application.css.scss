@@ -10,11 +10,19 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require tachyons.min
  *= require_self
  */
 
-.more-button {
-  background-image: linear-gradient(180deg, #fff 0, #fcfbfc);
-  background-repeat: repeat-x;
+@import "font-awesome-sprockets";
+@import "font-awesome";
+
+// This is actually a path into the bulma-rails assets directory
+@import "sass/utilities/initial-variables";
+
+$family-monospace: Consolas, monaco, monospace;
+
+@import "bulma";
+
+.code {
+  font-family: $family-monospace;
 }

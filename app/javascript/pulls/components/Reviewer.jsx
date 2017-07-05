@@ -2,23 +2,36 @@
 
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-import { VerifiedIcon, UnverifiedIcon } from "react-octicons";
 
 function statusToOcticon(status: string) {
   switch (status) {
     case "pending_approval":
-      return <UnverifiedIcon />;
+      return (
+        <span className="icon">
+          <i className="fa fa-square-o" />
+        </span>
+      );
     case "approved":
-      return <VerifiedIcon />;
+      return (
+        <span className="icon">
+          <i className="fa fa-check-square-o" />
+        </span>
+      );
     default:
       return status;
   }
 }
 
 const Reviewer = ({ reviewer }) =>
-  <div className="pa4 bw1 br2 b--light-gray mt1 bg-white">
-    <div className="dib mr3">{statusToOcticon(reviewer.status)}</div>
-    <div className="dib code f4">{reviewer.login}</div>
+  <div className="level">
+    <div className="level-left">
+      <div className="level-item">
+        {statusToOcticon(reviewer.status)}
+      </div>
+      <div className="level-item">
+        {reviewer.login}
+      </div>
+    </div>
   </div>;
 
 export default createFragmentContainer(
