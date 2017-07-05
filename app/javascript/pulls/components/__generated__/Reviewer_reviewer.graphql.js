@@ -12,6 +12,9 @@ export type Reviewer_reviewer = {|
   +id: string;
   +login: ?string;
   +status: ?string;
+  +reviewRule: ?{|
+    +name: ?string;
+  |};
 |};
 */
 
@@ -41,6 +44,24 @@ const fragment /*: ConcreteFragment*/ = {
       "alias": null,
       "args": null,
       "name": "status",
+      "storageKey": null
+    },
+    {
+      "kind": "LinkedField",
+      "alias": null,
+      "args": null,
+      "concreteType": "ReviewRule",
+      "name": "reviewRule",
+      "plural": false,
+      "selections": [
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "args": null,
+          "name": "name",
+          "storageKey": null
+        }
+      ],
       "storageKey": null
     }
   ],

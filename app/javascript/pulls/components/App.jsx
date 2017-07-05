@@ -6,7 +6,7 @@ import PullRequestList from "./PullRequestList";
 import PullRequestDetail from "./PullRequestDetail";
 import makeEnvironment from "../makeEnvironment";
 import { QueryRenderer, graphql } from "react-relay";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 
 const csrfToken = document
   .getElementsByName("csrf-token")[0]
@@ -110,6 +110,7 @@ const App = () =>
             );
           }}
         />
+        <Redirect from="/" to="/repos" />
       </Switch>
     </div>
   </BrowserRouter>;

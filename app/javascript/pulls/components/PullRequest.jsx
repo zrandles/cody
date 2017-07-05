@@ -13,7 +13,7 @@ const PullRequest = ({
   <div className="level box">
     <div className="level-left code">
       <div className="level-item">
-        {`${repository}#${number}`}
+        <strong>{`${repository}#${number}`}</strong>
       </div>
       <div className="level-item">
         {status}

@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 4983d5164b9d00becdcb7bda51faadd2
+ * @relayHash f3955d1f81056e6bf39168d011fa8eb7
  */
 
 /* eslint-disable */
@@ -56,6 +56,10 @@ fragment Reviewer_reviewer on Reviewer {
   id
   login
   status
+  reviewRule {
+    name
+    id
+  }
 }
 */
 
@@ -291,6 +295,31 @@ const batch /*: ConcreteBatch*/ = {
                                 "args": null,
                                 "name": "status",
                                 "storageKey": null
+                              },
+                              {
+                                "kind": "LinkedField",
+                                "alias": null,
+                                "args": null,
+                                "concreteType": "ReviewRule",
+                                "name": "reviewRule",
+                                "plural": false,
+                                "selections": [
+                                  {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "args": null,
+                                    "name": "name",
+                                    "storageKey": null
+                                  },
+                                  {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "args": null,
+                                    "name": "id",
+                                    "storageKey": null
+                                  }
+                                ],
+                                "storageKey": null
                               }
                             ],
                             "storageKey": null
@@ -326,7 +355,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "query App_Detail_Query(\n  $owner: String!\n  $name: String!\n  $number: String!\n) {\n  viewer {\n    repository(owner: $owner, name: $name) {\n      pullRequest(number: $number) {\n        ...PullRequestDetail_pullRequest\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment PullRequestDetail_pullRequest on PullRequest {\n  id\n  repository\n  number\n  status\n  reviewers {\n    edges {\n      node {\n        ...Reviewer_reviewer\n        id\n      }\n    }\n  }\n}\n\nfragment Reviewer_reviewer on Reviewer {\n  id\n  login\n  status\n}\n"
+  "text": "query App_Detail_Query(\n  $owner: String!\n  $name: String!\n  $number: String!\n) {\n  viewer {\n    repository(owner: $owner, name: $name) {\n      pullRequest(number: $number) {\n        ...PullRequestDetail_pullRequest\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment PullRequestDetail_pullRequest on PullRequest {\n  id\n  repository\n  number\n  status\n  reviewers {\n    edges {\n      node {\n        ...Reviewer_reviewer\n        id\n      }\n    }\n  }\n}\n\nfragment Reviewer_reviewer on Reviewer {\n  id\n  login\n  status\n  reviewRule {\n    name\n    id\n  }\n}\n"
 };
 
 module.exports = batch;

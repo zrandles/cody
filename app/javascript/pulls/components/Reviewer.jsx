@@ -29,7 +29,12 @@ const Reviewer = ({ reviewer }) =>
         {statusToOcticon(reviewer.status)}
       </div>
       <div className="level-item">
-        {reviewer.login}
+        <strong>
+          {reviewer.login}
+        </strong>
+      </div>
+      <div className="level-item">
+        {reviewer.reviewRule != null ? reviewer.reviewRule.name : false}
       </div>
     </div>
   </div>;
@@ -41,6 +46,9 @@ export default createFragmentContainer(
       id
       login
       status
+      reviewRule {
+        name
+      }
     }
   `
 );

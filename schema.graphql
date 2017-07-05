@@ -119,9 +119,17 @@ type RepositoryEdge {
   node: Repository
 }
 
+type ReviewRule implements Node {
+  id: ID!
+  name: String
+}
+
 type Reviewer implements Node {
   id: ID!
   login: String
+
+  # The Review Rule that added this Reviewer
+  reviewRule: ReviewRule
   status: String
 }
 
