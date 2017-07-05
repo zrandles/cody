@@ -84,6 +84,11 @@ type Repository implements Node {
   id: ID!
   name: String
   owner: String
+
+  # Find a PullRequest by number
+  pullRequest(number: String!): PullRequest
+
+  # This repository's Pull Requests
   pullRequests(
     # Returns the elements in the list that come after the specified global ID.
     after: String
@@ -100,8 +105,44 @@ type Repository implements Node {
   ): PullRequestConnection
 }
 
+# The connection type for Repository.
+type RepositoryConnection {
+  # A list of edges.
+  edges: [RepositoryEdge]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type RepositoryEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: Repository
+}
+
 type User implements Node {
   id: ID!
   login: String!
   name: String!
+  repositories(
+    # Returns the elements in the list that come after the specified global ID.
+    after: String
+
+    # Returns the elements in the list that come before the specified global ID.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    name: String!
+    owner: String!
+  ): RepositoryConnection
+
+  # Find a given repository by the owner and name
+  repository(owner: String!, name: String!): Repository
 }

@@ -2,17 +2,15 @@
 
 import React from "react";
 import cn from "lib/cn";
+import { createFragmentContainer, graphql } from "react-relay";
 import { Link } from "react-router-dom";
-import gql from "graphql-tag";
+import type { PullRequest_pullRequest } from "./__generated__/PullRequest_pullRequest.graphql";
 
-export type PullRequestType = {|
-  id: string,
-  repository: string,
-  number: string,
-  status: string
-|};
-
-const PullRequest = ({ number, repository, status }: PullRequestType) =>
+const PullRequest = ({
+  pullRequest: { id, number, repository, status }
+}: {
+  pullRequest: PullRequest_pullRequest
+}) =>
   <div className={cn("-pull-request")}>
     <div>
       <div className="dib pv1 f4 code near-black lh-copy">
@@ -30,15 +28,14 @@ const PullRequest = ({ number, repository, status }: PullRequestType) =>
     </Link>
   </div>;
 
-PullRequest.fragments = {
-  pullRequest: gql`
+export default createFragmentContainer(
+  PullRequest,
+  graphql`
     fragment PullRequest_pullRequest on PullRequest {
-      id,
-      repository,
-      number,
+      id
+      repository
+      number
       status
     }
   `
-};
-
-export default PullRequest;
+);

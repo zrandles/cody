@@ -1,4 +1,6 @@
 class GraphqlController < ApplicationController
+  include RequiresAuthentication
+
   def execute
     variables = ensure_hash(params[:variables])
     query = params[:query]

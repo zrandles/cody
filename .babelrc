@@ -15,6 +15,7 @@
   ],
   "plugins": [
     "react-hot-loader/babel",
+    "relay",
     "syntax-dynamic-import",
     [
       "transform-class-properties",

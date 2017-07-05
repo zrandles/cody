@@ -1,33 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {
-  ApolloClient,
-  ApolloProvider,
-  createNetworkInterface
-} from "react-apollo";
 import App from "pulls/components/App";
 import { AppContainer } from "react-hot-loader";
-
-const csrfToken = document.getElementsByName("csrf-token")[0].content;
-const client = new ApolloClient({
-  addTypename: true,
-  networkInterface: createNetworkInterface({
-    uri: "/graphql",
-    opts: {
-      credentials: "same-origin",
-      headers: {
-        "X-CSRF-Token": csrfToken
-      }
-    }
-  })
-});
 
 const hotRender = Component => {
   ReactDOM.render(
     <AppContainer>
-      <ApolloProvider client={client}>
-        <Component />
-      </ApolloProvider>
+      <Component />
     </AppContainer>,
     document.getElementById("pull_request_mount")
   );

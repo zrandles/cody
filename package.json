@@ -24,9 +24,9 @@
     "prop-types": "^15.5.10",
     "rails-erb-loader": "^5.0.2",
     "react": "^15.6.1",
-    "react-apollo": "^1.4.2",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.5",
+    "react-relay": "^1.1.0",
     "react-router-dom": "^4.1.1",
     "redux": "^3.7.0",
     "resolve-url-loader": "^2.0.3",
@@ -38,11 +38,16 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
+    "babel-plugin-relay": "^1.1.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "eslint": "^4.0.0",
     "eslint-plugin-react": "^7.1.0",
     "prettier-eslint": "^6.3.0",
     "react-hot-loader": "next",
+    "relay-compiler": "^1.1.0",
     "webpack-dev-server": "^2.5.0"
+  },
+  "scripts": {
+    "relay": "relay-compiler --src ./app/javascript --extensions js jsx --schema ./schema.graphql"
   }
 }
