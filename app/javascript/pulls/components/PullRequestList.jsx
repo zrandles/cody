@@ -9,15 +9,12 @@ const PullRequestList = ({
   repository
 }: {
   repository: PullRequestList_repository
-}) => {
-  return (
-    <div className="mw7 center">
-      {repository.pullRequests.edges.map(edge => {
-        return <PullRequest key={edge.node.id} pullRequest={edge.node} />;
-      })}
-    </div>
-  );
-};
+}) =>
+  <div className="mw7 center">
+    {repository.pullRequests.edges.map(edge => {
+      return <PullRequest key={edge.node.id} pullRequest={edge.node} />;
+    })}
+  </div>;
 
 export default createFragmentContainer(
   PullRequestList,

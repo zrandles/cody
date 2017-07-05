@@ -58,15 +58,6 @@ type PullRequestEdge {
   node: PullRequest
 }
 
-# The review status of a PullRequest
-enum PullRequestStatus {
-  # Approved
-  approved
-
-  # Pending Review
-  pending_review
-}
-
 # The query root
 type Query {
   # Fetches an object given its ID.
@@ -80,15 +71,6 @@ type Query {
     # IDs of the objects.
     ids: [ID!]!
   ): [Node]!
-
-  # Find a PullRequest by number
-  pullRequest(repository: String!, number: String!): PullRequest
-
-  # Find PullRequests belonging to a given a repository
-  pullRequests(repository: String!, status: PullRequestStatus!, page: Int, perPage: Int): [PullRequest!]
-
-  # Find a given repository by the owner and name
-  repository(owner: String!, name: String!): Repository
 
   # The currently authenticated user
   viewer: User

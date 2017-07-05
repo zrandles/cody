@@ -1,4 +1,13 @@
 {
+  "name": "cody",
+  "version": "0.0.0",
+  "description": "Your friendly neighborhood code reivew bot",
+  "repository": "https://github.com/aergonaut/cody.git",
+  "author": "Chris Fung <aergonaut@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "relay": "relay-compiler --src ./app/javascript --extensions js jsx --schema ./schema.graphql"
+  },
   "dependencies": {
     "autoprefixer": "^7.1.1",
     "babel-core": "^6.25.0",
@@ -43,12 +52,9 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "eslint": "^4.0.0",
     "eslint-plugin-react": "^7.1.0",
-    "prettier-eslint": "^6.3.0",
+    "prettier-eslint": "^6.4.2",
     "react-hot-loader": "next",
     "relay-compiler": "^1.1.0",
     "webpack-dev-server": "^2.5.0"
-  },
-  "scripts": {
-    "relay": "relay-compiler --src ./app/javascript --extensions js jsx --schema ./schema.graphql"
   }
 }

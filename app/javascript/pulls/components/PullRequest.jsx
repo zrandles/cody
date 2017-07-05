@@ -1,7 +1,6 @@
 // @flow
 
 import React from "react";
-import cn from "lib/cn";
 import { createFragmentContainer, graphql } from "react-relay";
 import { Link } from "react-router-dom";
 import type { PullRequest_pullRequest } from "./__generated__/PullRequest_pullRequest.graphql";
@@ -11,7 +10,7 @@ const PullRequest = ({
 }: {
   pullRequest: PullRequest_pullRequest
 }) =>
-  <div className={cn("-pull-request")}>
+  <div className="pa4 bt bb bw1 br2 b--light-gray flex flex-row justify-between bg-white">
     <div>
       <div className="dib pv1 f4 code near-black lh-copy">
         {`${repository}#${number}`}
@@ -22,7 +21,7 @@ const PullRequest = ({
     </div>
     <Link
       to={`/repos/${repository}/pull/${number}`}
-      className={cn("-pull-request--more more-button")}
+      className="dib br2 ba b--light-silver pv2 ph3 f5 gray hover-near-black link more-button"
     >
       &bull; &bull; &bull;
     </Link>
