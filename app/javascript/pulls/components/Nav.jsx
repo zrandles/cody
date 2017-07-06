@@ -9,9 +9,9 @@ const Nav = () =>
     <div className="container">
       <div className="nav-left">
         <NavLink to="/" className="nav-item" activeClassName="is-active">
-          <Icon icon="gears" />
-          &nbsp;
           <strong>Cody</strong>
+          &nbsp;
+          <Icon icon="code" size="medium" />
         </NavLink>
         <NavLink
           to="/repos"

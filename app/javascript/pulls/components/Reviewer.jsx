@@ -7,14 +7,14 @@ function statusToOcticon(status: string) {
   switch (status) {
     case "pending_approval":
       return (
-        <span className="icon">
-          <i className="fa fa-square-o" />
+        <span className="icon color-warning" title="Pending approval">
+          <i className="fa fa-circle-o" />
         </span>
       );
     case "approved":
       return (
-        <span className="icon">
-          <i className="fa fa-check-square-o" />
+        <span className="icon color-success" title="Approved">
+          <i className="fa fa-circle" />
         </span>
       );
     default:

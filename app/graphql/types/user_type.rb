@@ -9,11 +9,11 @@ Types::UserType = GraphQL::ObjectType.define do
   field :name, !types.String
 
   connection :repositories, Types::RepositoryType.connection_type do
-    argument :owner, !types.String
-    argument :name, !types.String
-
     resolve -> (user, args, ctx) {
-      [Repository.new(owner: args[:owner], name: args[:name])]
+      PullRequest.distinct.order("repository ASC").pluck(:repository).map do |nwo|
+        owner, name = nwo.split("/", 2)
+        Repository.new(owner: owner, name: name)
+      end
     }
   end
 

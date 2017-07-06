@@ -4,6 +4,7 @@ import React from "react";
 import Nav from "./Nav";
 import PullRequestList from "./PullRequestList";
 import PullRequestDetail from "./PullRequestDetail";
+import RepositoryList from "./RepositoryList";
 import makeEnvironment from "../makeEnvironment";
 import { QueryRenderer, graphql } from "react-relay";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
@@ -19,6 +20,36 @@ const App = () =>
     <div>
       <Nav />
       <Switch>
+        <Route
+          exact
+          path="/repos"
+          render={() => {
+            return (
+              <QueryRenderer
+                environment={environment}
+                query={graphql`
+                  query App_RepoList_Query {
+                    viewer {
+                      ...RepositoryList_viewer
+                    }
+                  }
+                `}
+                render={({ error, props }) => {
+                  if (error) {
+                    return (
+                      <div>
+                        {error.message}
+                      </div>
+                    );
+                  } else if (props) {
+                    return <RepositoryList viewer={props.viewer} />;
+                  }
+                  return <div>Loading</div>;
+                }}
+              />
+            );
+          }}
+        />
         <Route
           exact
           path="/repos/:owner/:name"
