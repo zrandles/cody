@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 CodySchema = GraphQL::Schema.define do
   query(Types::QueryType)
 
@@ -16,7 +17,7 @@ CodySchema = GraphQL::Schema.define do
       return object
     else
       decoded = Base64.urlsafe_decode64(id)
-      if /[^\/]+\/[^\/]+/.match?(decoded)
+      if %r{[^/]+/[^/]+}.match?(decoded)
         owner, name = decoded.split("/", 2)
         return OpenStruct.new(owner: owner, name: name)
       end

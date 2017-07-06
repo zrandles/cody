@@ -24,7 +24,7 @@ RSpec.describe SessionsController, type: :controller do
 
     it "redirects to the Pull Requests page" do
       get :create
-      expect(response).to redirect_to(pulls_path)
+      expect(response).to redirect_to(root_path)
     end
 
     context "when the user has never logged in before" do
