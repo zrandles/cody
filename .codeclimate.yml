@@ -21,6 +21,11 @@ engines:
       - php
   eslint:
     enabled: true
+    config:
+      config: .eslintrc.json
+      extensions:
+        - .js
+        - .jsx
   fixme:
     enabled: true
 ratings:
@@ -43,3 +48,4 @@ exclude_paths:
 - db/**/*
 - spec/**/*
 - vendor/**/*
+- **/__generated__/**/*
