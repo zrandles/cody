@@ -34,6 +34,10 @@ Layout/SpaceInLambdaLiteral:
 Lint/AssignmentInCondition:
   Enabled: false
 
+Lint/UnusedBlockArgument:
+  Exclude:
+    - "app/graphql/**/*"
+
 # Style Cops
 
 Style/DoubleNegation:
