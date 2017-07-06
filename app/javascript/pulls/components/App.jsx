@@ -52,7 +52,7 @@ const App = () =>
         />
         <Route
           exact
-          path="/repos/:owner/:name"
+          path="/repos/:owner/:name/pulls"
           render={({ match }) => {
             return (
               <QueryRenderer
@@ -137,6 +137,17 @@ const App = () =>
                   }
                   return <div>Loading</div>;
                 }}
+              />
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/repos/:owner/:name"
+          render={({ match }) => {
+            return (
+              <Redirect
+                to={`/repos/${match.params.owner}/${match.params.name}/pulls`}
               />
             );
           }}

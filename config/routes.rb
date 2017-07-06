@@ -10,7 +10,11 @@ Rails.application.routes.draw do
   post '/webhooks/integration' => 'webhooks#integration'
 
   # Mirror GitHub's URL structure for Pull Requests
+  # These routes all direct the request to the PullsController so it can start
+  # the React app
+  get '/repos' => 'pulls#index'
   get '/repos/:owner/:repo' => 'pulls#index'
+  get '/repos/:owner/:repo/pulls' => 'pulls#index'
   get '/repos/:owner/:repo/pull/:number' => 'pulls#index'
 
   resource :session, only: %i(new create destroy)
