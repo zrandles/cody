@@ -8,6 +8,15 @@ import RepositoryList from "./RepositoryList";
 import makeEnvironment from "../makeEnvironment";
 import { QueryRenderer, graphql } from "react-relay";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+// https://github.com/facebook/relay/issues/1918
+// import type { App_RepoList_Query } from "./__generated__/App_RepoList_Query.graphql"
+// import type { App_List_Query } from "./__generated__/App_List_Query.graphql"
+// import type { App_Detail_Query } from "./__generated__/App_Detail_Query.graphql"
+
+// Disabling prop-types rule here until the issue to make relay-compiler's
+// generated types work correctly closes
+// https://github.com/facebook/relay/issues/1918
+/* eslint-disable react/prop-types */
 
 const csrfToken = document
   .getElementsByName("csrf-token")[0]
@@ -34,6 +43,7 @@ const App = () =>
                     }
                   }
                 `}
+                variables={{}}
                 render={({ error, props }) => {
                   if (error) {
                     return (

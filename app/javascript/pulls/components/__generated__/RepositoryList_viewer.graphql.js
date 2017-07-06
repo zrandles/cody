@@ -11,7 +11,9 @@ import type {ConcreteFragment} from 'relay-runtime';
 export type RepositoryList_viewer = {|
   +repositories: ?{|
     +edges: ?$ReadOnlyArray<?{|
-      +node: ?{| |};
+      +node: ?{|
+        +id: string;
+      |};
     |}>;
   |};
 |};
@@ -55,6 +57,13 @@ const fragment /*: ConcreteFragment*/ = {
               "name": "node",
               "plural": false,
               "selections": [
+                {
+                  "kind": "ScalarField",
+                  "alias": null,
+                  "args": null,
+                  "name": "id",
+                  "storageKey": null
+                },
                 {
                   "kind": "FragmentSpread",
                   "name": "Repository_repository",

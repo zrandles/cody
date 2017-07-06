@@ -5,9 +5,9 @@ Types::PullRequestType = GraphQL::ObjectType.define do
 
   global_id_field :id
 
-  field :number, types.String
-  field :repository, types.String
-  field :status, types.String
+  field :number, !types.String
+  field :repository, !types.String
+  field :status, !types.String
 
   connection :reviewers, Types::ReviewerType.connection_type do
     argument :status, types.String

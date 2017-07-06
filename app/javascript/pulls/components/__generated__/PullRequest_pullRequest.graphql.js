@@ -10,9 +10,9 @@
 import type {ConcreteFragment} from 'relay-runtime';
 export type PullRequest_pullRequest = {|
   +id: string;
-  +repository: ?string;
-  +number: ?string;
-  +status: ?string;
+  +repository: string;
+  +number: string;
+  +status: string;
 |};
 */
 

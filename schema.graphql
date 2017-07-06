@@ -21,8 +21,8 @@ type PageInfo {
 
 type PullRequest implements Node {
   id: ID!
-  number: String
-  repository: String
+  number: String!
+  repository: String!
   reviewers(
     # Returns the elements in the list that come after the specified global ID.
     after: String
@@ -37,7 +37,7 @@ type PullRequest implements Node {
     last: Int
     status: String
   ): ReviewerConnection
-  status: String
+  status: String!
 }
 
 # The connection type for PullRequest.
@@ -78,8 +78,8 @@ type Query {
 
 type Repository implements Node {
   id: ID!
-  name: String
-  owner: String
+  name: String!
+  owner: String!
 
   # Find a PullRequest by number
   pullRequest(number: String!): PullRequest
@@ -121,16 +121,16 @@ type RepositoryEdge {
 
 type ReviewRule implements Node {
   id: ID!
-  name: String
+  name: String!
 }
 
 type Reviewer implements Node {
   id: ID!
-  login: String
+  login: String!
 
   # The Review Rule that added this Reviewer
   reviewRule: ReviewRule
-  status: String
+  status: String!
 }
 
 # The connection type for Reviewer.

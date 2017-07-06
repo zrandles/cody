@@ -10,12 +10,14 @@
 import type {ConcreteFragment} from 'relay-runtime';
 export type PullRequestDetail_pullRequest = {|
   +id: string;
-  +repository: ?string;
-  +number: ?string;
-  +status: ?string;
+  +repository: string;
+  +number: string;
+  +status: string;
   +reviewers: ?{|
     +edges: ?$ReadOnlyArray<?{|
-      +node: ?{| |};
+      +node: ?{|
+        +id: string;
+      |};
     |}>;
   |};
 |};
@@ -80,6 +82,13 @@ const fragment /*: ConcreteFragment*/ = {
               "name": "node",
               "plural": false,
               "selections": [
+                {
+                  "kind": "ScalarField",
+                  "alias": null,
+                  "args": null,
+                  "name": "id",
+                  "storageKey": null
+                },
                 {
                   "kind": "FragmentSpread",
                   "name": "Reviewer_reviewer",

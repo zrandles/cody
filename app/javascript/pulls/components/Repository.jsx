@@ -3,8 +3,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createFragmentContainer, graphql } from "react-relay";
+import type { Repository_repository } from "./__generated__/Repository_repository.graphql";
 
-const Repository = ({ repository }) =>
+const Repository = ({ repository }: { repository: Repository_repository }) =>
   <div className="level box">
     <div className="level-left code">
       <div className="level-item">

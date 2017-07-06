@@ -98,6 +98,10 @@ Style/TrailingUnderscoreVariable:
 Metrics/AbcSize:
   Enabled: false
 
+Metrics/BlockLength:
+  Exclude:
+    - "app/graphql/**/*"
+
 Metrics/ClassLength:
   Max: 200
   Enabled: true

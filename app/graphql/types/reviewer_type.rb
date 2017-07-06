@@ -5,8 +5,8 @@ Types::ReviewerType = GraphQL::ObjectType.define do
 
   global_id_field :id
 
-  field :login, types.String
-  field :status, types.String
+  field :login, !types.String
+  field :status, !types.String
 
   field :reviewRule do
     type Types::ReviewRuleType

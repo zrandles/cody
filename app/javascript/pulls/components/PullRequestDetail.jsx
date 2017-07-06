@@ -23,9 +23,14 @@ const PullRequestDetail = ({
         </div>
         <hr />
         <div>
-          {pullRequest.reviewers.edges.map(edge => {
-            return <Reviewer key={edge.node.id} reviewer={edge.node} />;
-          })}
+          {pullRequest.reviewers != null && pullRequest.reviewers.edges != null
+            ? pullRequest.reviewers.edges.map(edge => {
+                if (edge != null && edge.node != null) {
+                  // https://github.com/facebook/relay/issues/1918
+                  return <Reviewer key={edge.node.id} reviewer={edge.node} />;
+                }
+              })
+            : null}
         </div>
       </div>
     </section>
@@ -43,6 +48,7 @@ export default createFragmentContainer(
       reviewers {
         edges {
           node {
+            id
             ...Reviewer_reviewer
           }
         }

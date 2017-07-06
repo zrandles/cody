@@ -5,5 +5,5 @@ Types::ReviewRuleType = GraphQL::ObjectType.define do
 
   global_id_field :id
 
-  field :name, types.String
+  field :name, !types.String
 end

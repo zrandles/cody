@@ -5,8 +5,8 @@ Types::RepositoryType = GraphQL::ObjectType.define do
 
   global_id_field :id
 
-  field :owner, types.String
-  field :name, types.String
+  field :owner, !types.String
+  field :name, !types.String
 
   connection :pullRequests, Types::PullRequestType.connection_type do
     description "This repository's Pull Requests"

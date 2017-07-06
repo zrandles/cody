@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 3633f31f6105017adcfe7326ff47c5c5
+ * @relayHash b46cec601f6685a1627c008361c9d451
  */
 
 /* eslint-disable */
@@ -27,8 +27,8 @@ fragment RepositoryList_viewer on User {
   repositories(first: 10) {
     edges {
       node {
-        ...Repository_repository
         id
+        ...Repository_repository
       }
     }
   }
@@ -158,7 +158,7 @@ const batch /*: ConcreteBatch*/ = {
       }
     ]
   },
-  "text": "query App_RepoList_Query {\n  viewer {\n    ...RepositoryList_viewer\n    id\n  }\n}\n\nfragment RepositoryList_viewer on User {\n  repositories(first: 10) {\n    edges {\n      node {\n        ...Repository_repository\n        id\n      }\n    }\n  }\n}\n\nfragment Repository_repository on Repository {\n  id\n  owner\n  name\n}\n"
+  "text": "query App_RepoList_Query {\n  viewer {\n    ...RepositoryList_viewer\n    id\n  }\n}\n\nfragment RepositoryList_viewer on User {\n  repositories(first: 10) {\n    edges {\n      node {\n        id\n        ...Repository_repository\n      }\n    }\n  }\n}\n\nfragment Repository_repository on Repository {\n  id\n  owner\n  name\n}\n"
 };
 
 module.exports = batch;

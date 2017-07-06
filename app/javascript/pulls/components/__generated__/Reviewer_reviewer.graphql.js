@@ -10,10 +10,10 @@
 import type {ConcreteFragment} from 'relay-runtime';
 export type Reviewer_reviewer = {|
   +id: string;
-  +login: ?string;
-  +status: ?string;
+  +login: string;
+  +status: string;
   +reviewRule: ?{|
-    +name: ?string;
+    +name: string;
   |};
 |};
 */

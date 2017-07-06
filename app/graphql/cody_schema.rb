@@ -1,4 +1,3 @@
-# rubocop:disable Metrics/BlockLength
 CodySchema = GraphQL::Schema.define do
   query(Types::QueryType)
 

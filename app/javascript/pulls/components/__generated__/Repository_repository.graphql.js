@@ -10,8 +10,8 @@
 import type {ConcreteFragment} from 'relay-runtime';
 export type Repository_repository = {|
   +id: string;
-  +owner: ?string;
-  +name: ?string;
+  +owner: string;
+  +name: string;
 |};
 */
 

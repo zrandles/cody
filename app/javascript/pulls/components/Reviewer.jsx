@@ -2,6 +2,7 @@
 
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
+import type { Reviewer_reviewer } from "./__generated__/Reviewer_reviewer.graphql";
 
 function statusToOcticon(status: string) {
   switch (status) {
@@ -22,7 +23,7 @@ function statusToOcticon(status: string) {
   }
 }
 
-const Reviewer = ({ reviewer }) =>
+const Reviewer = ({ reviewer }: { reviewer: Reviewer_reviewer }) =>
   <div className="level">
     <div className="level-left">
       <div className="level-item">

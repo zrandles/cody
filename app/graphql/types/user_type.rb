@@ -10,7 +10,12 @@ Types::UserType = GraphQL::ObjectType.define do
 
   connection :repositories, Types::RepositoryType.connection_type do
     resolve -> (user, args, ctx) {
-      PullRequest.distinct.order("repository ASC").pluck(:repository).map do |nwo|
+      PullRequest
+        .distinct
+        .order("repository ASC")
+        .pluck(:repository)
+        .map do |nwo|
+
         owner, name = nwo.split("/", 2)
         Repository.new(owner: owner, name: name)
       end
@@ -18,7 +23,7 @@ Types::UserType = GraphQL::ObjectType.define do
   end
 
   field :repository do
-    type Types::RepositoryType
+    type !Types::RepositoryType
     description "Find a given repository by the owner and name"
     argument :owner, !types.String
     argument :name, !types.String
