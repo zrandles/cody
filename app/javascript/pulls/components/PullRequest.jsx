@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import type { PullRequest_pullRequest } from "./__generated__/PullRequest_pullRequest.graphql";
 
 const PullRequest = ({
-  pullRequest: { id, number, repository, status }
+  pullRequest: { number, repository, status }
 }: {
   pullRequest: PullRequest_pullRequest
 }) =>
