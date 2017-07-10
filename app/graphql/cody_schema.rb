@@ -18,11 +18,11 @@ CodySchema = GraphQL::Schema.define do
       decoded = Base64.urlsafe_decode64(id)
       if %r{[^/]+/[^/]+}.match?(decoded)
         owner, name = decoded.split("/", 2)
-        return OpenStruct.new(owner: owner, name: name)
+        return Repository.new(owner: owner, name: name)
       end
     end
 
-    raise "Couldn't decoded ID: #{id}"
+    raise "Couldn't decode ID: #{id}"
   }
 
   resolve_type -> (obj, ctx) {
@@ -31,6 +31,8 @@ CodySchema = GraphQL::Schema.define do
       Types::PullRequestType
     when User
       Types::UserType
+    when Repository
+      Types::RepositoryType
     else
       raise "Unexpected object: #{obj}"
     end
