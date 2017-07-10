@@ -13,9 +13,7 @@ Types::RepositoryType = GraphQL::ObjectType.define do
     argument :status, types.String
     resolve -> (repository, args, ctx) {
       # status = args[:status] || "pending_review"
-      PullRequest
-        .where(repository: "#{repository.owner}/#{repository.name}")
-        .order("created_at DESC")
+      repository.pull_requests.order("created_at DESC")
     }
   end
 
@@ -24,10 +22,7 @@ Types::RepositoryType = GraphQL::ObjectType.define do
     argument :number, !types.String
     description "Find a PullRequest by number"
     resolve -> (repository, args, ctx) {
-      PullRequest.find_by(
-        number: args[:number],
-        repository: "#{repository.owner}/#{repository.name}"
-      )
+      repository.pull_requests.find_by(number: args[:number])
     }
   end
 end

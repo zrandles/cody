@@ -38,3 +38,8 @@ $family-monospace: Consolas, monaco, monospace;
 .bg-white {
   background-color: $white;
 }
+
+.navbar-container {
+  position: relative;
+  box-shadow: 0 1px 5px 0 $grey;
+}
