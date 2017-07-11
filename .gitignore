@@ -15,3 +15,5 @@
 .env
 
 site/
+/public/packs
+/node_modules

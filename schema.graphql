@@ -1,0 +1,174 @@
+# An object with an ID.
+interface Node {
+  # ID of the object.
+  id: ID!
+}
+
+# Information about pagination in a connection.
+type PageInfo {
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+}
+
+type PullRequest implements Node {
+  id: ID!
+  number: String!
+  repository: String!
+  reviewers(
+    # Returns the elements in the list that come after the specified global ID.
+    after: String
+
+    # Returns the elements in the list that come before the specified global ID.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    status: String
+  ): ReviewerConnection
+  status: String!
+}
+
+# The connection type for PullRequest.
+type PullRequestConnection {
+  # A list of edges.
+  edges: [PullRequestEdge]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type PullRequestEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: PullRequest
+}
+
+# The query root
+type Query {
+  # Fetches an object given its ID.
+  node(
+    # ID of the object.
+    id: ID!
+  ): Node
+
+  # Fetches a list of objects given a list of IDs.
+  nodes(
+    # IDs of the objects.
+    ids: [ID!]!
+  ): [Node]!
+
+  # The currently authenticated user
+  viewer: User
+}
+
+type Repository implements Node {
+  id: ID!
+  name: String!
+  owner: String!
+
+  # Find a PullRequest by number
+  pullRequest(number: String!): PullRequest
+
+  # This repository's Pull Requests
+  pullRequests(
+    # Returns the elements in the list that come after the specified global ID.
+    after: String
+
+    # Returns the elements in the list that come before the specified global ID.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    status: String
+  ): PullRequestConnection
+}
+
+# The connection type for Repository.
+type RepositoryConnection {
+  # A list of edges.
+  edges: [RepositoryEdge]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type RepositoryEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: Repository
+}
+
+type ReviewRule implements Node {
+  id: ID!
+  name: String!
+}
+
+type Reviewer implements Node {
+  id: ID!
+  login: String!
+
+  # The Review Rule that added this Reviewer
+  reviewRule: ReviewRule
+  status: String!
+}
+
+# The connection type for Reviewer.
+type ReviewerConnection {
+  # A list of edges.
+  edges: [ReviewerEdge]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type ReviewerEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: Reviewer
+}
+
+type User implements Node {
+  id: ID!
+  login: String!
+  name: String!
+  repositories(
+    # Returns the elements in the list that come after the specified global ID.
+    after: String
+
+    # Returns the elements in the list that come before the specified global ID.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): RepositoryConnection
+
+  # Find a given repository by the owner and name
+  repository(owner: String!, name: String!): Repository
+}

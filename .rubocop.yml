@@ -34,6 +34,10 @@ Layout/SpaceInLambdaLiteral:
 Lint/AssignmentInCondition:
   Enabled: false
 
+Lint/UnusedBlockArgument:
+  Exclude:
+    - "app/graphql/**/*"
+
 # Style Cops
 
 Style/DoubleNegation:
@@ -93,6 +97,10 @@ Style/TrailingUnderscoreVariable:
 
 Metrics/AbcSize:
   Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "app/graphql/**/*"
 
 Metrics/ClassLength:
   Max: 200

@@ -62,7 +62,6 @@ end
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
-  config.include JsonFixture
 end
 
 Shoulda::Matchers.configure do |config|
@@ -74,3 +73,5 @@ Shoulda::Matchers.configure do |config|
     with.library :rails
   end
 end
+
+OmniAuth.config.test_mode = true

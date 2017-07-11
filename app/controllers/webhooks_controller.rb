@@ -1,4 +1,6 @@
 class WebhooksController < ApplicationController
+  protect_from_forgery with: :null_session
+
   # rubocop:disable Metrics/CyclomaticComplexity
   def pull_request
     body = JSON.parse(request.body.read)
@@ -47,5 +49,15 @@ class WebhooksController < ApplicationController
 
     ReceiveIssueCommentEvent.perform_async(body)
     head :accepted
+  end
+
+  # The entry point for webhooks from the GitHub app
+  def integration
+    body = JSON.parse(request.body.read)
+
+    if body.key?("zen")
+      head :ok
+      return
+    end
   end
 end

@@ -51,7 +51,23 @@ gem 'dalli'
 
 gem 'faraday-http-cache'
 
-gem 'high_voltage'
+gem 'omniauth-github'
+
+gem 'aws-sdk'
+
+gem 'jwt'
+
+gem 'webpacker'
+
+gem 'graphql'
+
+gem 'kaminari'
+
+gem 'bulma-rails'
+
+gem 'font-awesome-sass'
+
+gem 'pundit'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -65,12 +81,14 @@ end
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> in views
-  gem 'web-console', '~> 2.0'
+  gem 'web-console', '~> 3.0'
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
 
   gem 'netrc'
+
+  gem 'rubocop'
 end
 
 group :test do
@@ -83,3 +101,5 @@ end
 group :production do
   gem 'rails_12factor'
 end
+
+gem 'graphiql-rails', group: :development

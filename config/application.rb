@@ -15,6 +15,12 @@ module Cody
     config.autoload_paths << Rails.root.join("lib")
 
     config.filter_parameters << :password
+
+    # from https://github.com/rails/rails/pull/29180/files#diff-6d52a5cae0f7b90f01bf084772bb0421R10
+    initializer "active_support.reset_all_current_attributes_instances" do |app|
+      app.executor.to_run { ActiveSupport::CurrentAttributes.reset_all }
+      app.executor.to_complete { ActiveSupport::CurrentAttributes.reset_all }
+    end
   end
 end
 

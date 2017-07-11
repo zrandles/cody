@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 namespace :data do
   desc "Migrate serialized reviewers to Reviewer model"
   task migrate_to_reviewer_model: :environment do
@@ -34,7 +35,9 @@ namespace :data do
         prelude, addendum = body.split(/^\s*#*\s*Generated\s*Reviewers\s*$/, 2)
 
         # Scan the beginning for reviewer check boxes
-        prelude.scan(PullRequest::REVIEWER_CHECKBOX_REGEX).each do |check_mark, reviewer_login|
+        prelude.scan(PullRequest::REVIEWER_CHECKBOX_REGEX)
+          .each do |check_mark, reviewer_login|
+
           status =
             if check_mark == "x"
               Reviewer::STATUS_APPROVED

@@ -1,4 +1,4 @@
-class PullRequest < ActiveRecord::Base
+class PullRequest < ApplicationRecord
   validates :number, numericality: true, presence: true
   validates :status, presence: true
   validates :repository, presence: true
