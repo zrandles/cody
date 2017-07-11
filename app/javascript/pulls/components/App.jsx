@@ -54,7 +54,7 @@ const App = () =>
                   } else if (props) {
                     return <RepositoryList viewer={props.viewer} />;
                   }
-                  return <div>Loading</div>;
+                  return <div className="loader">Loading</div>;
                 }}
               />
             );
@@ -98,7 +98,7 @@ const App = () =>
                       <PullRequestList repository={props.viewer.repository} />
                     );
                   }
-                  return <div>Loading</div>;
+                  return <div className="loader">Loading</div>;
                 }}
               />
             );
@@ -145,7 +145,7 @@ const App = () =>
                       />
                     );
                   }
-                  return <div>Loading</div>;
+                  return <div className="loader">Loading</div>;
                 }}
               />
             );

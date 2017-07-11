@@ -6,3 +6,5 @@ eslint:
   ignore_file: .eslintignore
 haml:
   enabled: false
+scss:
+  enabled: false
