@@ -144,7 +144,7 @@ RSpec.describe ReceivePullRequestEvent do
 
           it "sends the pending review comment in the body" do
             expect(WebMock).to have_requested(:post, %r(https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/statuses/[0-9abcdef]{40})).
-              with { |req| JSON.load(req.body)["description"] == "Not all reviewers have approved. Comment \"LGTM\" to give approval." }
+              with { |req| JSON.load(req.body)["description"] == "Not all reviewers have approved" }
           end
         end
 
