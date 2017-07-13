@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   get '/repos' => 'pulls#index'
   get '/repos/:owner/:repo' => 'pulls#index'
   get '/repos/:owner/:repo/pulls' => 'pulls#index'
-  get '/repos/:owner/:repo/pull/:number' => 'pulls#index'
+  get '/repos/:owner/:repo/pull/:number' => 'pulls#index', as: :pull
 
   resource :session, only: %i(new create destroy)
 

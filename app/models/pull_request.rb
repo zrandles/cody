@@ -92,6 +92,48 @@ class PullRequest < ApplicationRecord
     reviewers.pending_review.map(&:login)
   end
 
+  def owner
+    self.repository.split("/", 2)[0]
+  end
+
+  def repo
+    self.repository.split("/", 2)[1]
+  end
+
+  def target_url
+    Rails.application.routes.url_helpers.pull_url(
+      repo: self.repo,
+      owner: self.owner,
+      number: self.number,
+      host: ENV["CODY_HOST"],
+      protocol: "https"
+    )
+  end
+
+  def update_body
+    addendum = <<~EOF
+      ## Generated Reviewers
+
+    EOF
+
+    generated_reviewers.each do |reviewer|
+      addendum << reviewer.addendum
+    end
+
+    # Drop existing Generated Reviewers section and replace with new one
+    old_body = self.resource["body"]
+    prelude, _ = old_body.split(ReviewRule::GENERATED_REVIEWERS_REGEX, 2)
+    prelude ||= ""
+
+    new_body = prelude.rstrip + "\n\n" + addendum
+
+    github_client.update_pull_request(
+      self.repository,
+      self.number,
+      body: new_body
+    )
+  end
+
   private
 
   def update_child_pull_requests
@@ -129,7 +171,7 @@ class PullRequest < ApplicationRecord
       {
         context: "code-review/cody",
         description: COMMIT_STATUS_DESCRIPTIONS[commit_status] % message,
-        target_url: Setting.lookup("status_target_url")
+        target_url: self.target_url
       }
     end
   end

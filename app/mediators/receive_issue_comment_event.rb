@@ -134,5 +134,8 @@ class ReceiveIssueCommentEvent
 
       reviewer.update!(login: login)
     end
+
+    pr.reload
+    pr.update_body
   end
 end

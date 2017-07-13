@@ -2,20 +2,14 @@ require 'rails_helper'
 
 RSpec.describe ApplyReviewRules do
   let(:pull_request_hash) do
-    {
-      "number" => 42,
-      "base" => {
-        "repo" => {
-          "full_name" => "aergonaut/testrepo"
-        },
-      },
-      "body" => "Lorem ipsum\n"
-    }
+    fixture = json_fixture("pr")
+    fixture["number"] = "42"
+    fixture
   end
 
   let(:job) { ApplyReviewRules.new(pr, pull_request_hash) }
 
-  let(:pr) { FactoryGirl.create :pull_request }
+  let(:pr) { FactoryGirl.create :pull_request, number: "42" }
 
   let(:rules) { FactoryGirl.create_list :review_rule, 2 }
 
@@ -26,7 +20,10 @@ RSpec.describe ApplyReviewRules do
 
     expect(ReviewRule).to receive(:for_repository).and_return(rules)
 
-    expect(pr).to receive(:generated_reviewers).and_return(reviewers)
+    expect(pr).to receive(:generated_reviewers).and_return(reviewers).at_least(:once)
+
+    stub_request(:get, "https://api.github.com/repos/aergonaut/testrepo/pulls/42").
+      to_return(status: 200, headers: { 'Content-Type' => 'application/json' }, body: JSON.dump(pull_request_hash))
 
     # stub request to update PR body
     stub_request(:patch, "https://api.github.com/repos/aergonaut/testrepo/pulls/42").

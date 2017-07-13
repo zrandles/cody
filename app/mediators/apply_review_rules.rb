@@ -13,29 +13,11 @@ class ApplyReviewRules
     reviewers = pr.generated_reviewers
     return if reviewers.empty?
 
-    addendum = <<~EOF
-      ## Generated Reviewers
-
-    EOF
-
-    reviewers.each do |reviewer|
-      addendum << reviewer.addendum
-    end
-
-    # Drop existing Generated Reviewers section and replace with new one
-    old_body = pull_request_hash["body"]
-    prelude, _ = old_body.split(ReviewRule::GENERATED_REVIEWERS_REGEX, 2)
-
-    new_body = prelude.rstrip + "\n\n" + addendum
+    pr.reload
+    pr.update_body
 
     github = Octokit::Client.new(
       access_token: Rails.application.secrets.github_access_token
-    )
-
-    github.update_pull_request(
-      pull_request_hash["base"]["repo"]["full_name"],
-      pull_request_hash["number"],
-      body: new_body
     )
 
     # Update labels

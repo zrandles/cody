@@ -75,6 +75,13 @@ RSpec.describe ReceiveIssueCommentEvent do
     let(:rule) { FactoryGirl.create :review_rule, short_code: "foo", reviewer: acceptable_reviewer }
 
     before do
+      stub_request(:get, %r(https?://api.github.com/repos/\w+/\w+/pulls/\d+)).to_return(
+        body: JSON.dump(json_fixture("pr")),
+        status: 200,
+        headers: { "Content-Type" => "application/json" }
+      )
+      stub_request(:patch, %r{https?://api.github.com/repos/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/pulls/\d+})
+
       FactoryGirl.create :reviewer, review_rule: rule, pull_request: pr, login: "aergonaut"
     end
 
