@@ -137,5 +137,6 @@ class ReceiveIssueCommentEvent
 
     pr.reload
     pr.update_body
+    pr.assign_reviewers
   end
 end
