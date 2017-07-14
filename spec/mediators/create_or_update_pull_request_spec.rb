@@ -58,10 +58,11 @@ RSpec.describe CreateOrUpdatePullRequest, type: :model do
     end
 
     context "synchronizing the peer review list" do
-      let(:pull_request) { FactoryGirl.create :pull_request, number: 9876 }
-      let(:reviewers) { FactoryGirl.create_list :reviewer, 3, pull_request: pull_request }
+      let!(:pull_request) { FactoryGirl.create :pull_request, number: 9876 }
+      let!(:gen_reviewers) { FactoryGirl.create_list :reviewer, 2, pull_request: pull_request}
+      let!(:reviewers) { FactoryGirl.create_list :reviewer, 3, review_rule: nil, pull_request: pull_request }
 
-      let(:body) do
+      let!(:body) do
         <<~BODY
           - [ ] @#{reviewers[0].login}
           - [ ] @#{reviewers[2].login}
@@ -91,9 +92,14 @@ RSpec.describe CreateOrUpdatePullRequest, type: :model do
           .to_return(status: 200, body: "", headers: {})
       end
 
-      it "removes reviewers who were deleted manually" do
+      it "removes peer reviewers who were deleted manually but leaves generated reviewers" do
         CreateOrUpdatePullRequest.new.perform(payload)
-        expect(pull_request.reviewers.map(&:login)).not_to include(reviewers[1].login)
+        expected_reviewers = [
+          reviewers[0].login,
+          reviewers[2].login,
+          *gen_reviewers.map(&:login)
+        ]
+        expect(pull_request.reviewers.map(&:login)).to contain_exactly(*expected_reviewers)
       end
     end
   end
