@@ -114,6 +114,13 @@ class CreateOrUpdatePullRequest
       end
     end
 
+    # Destroy reviewers who were on the list before but aren't any longer
+    pr.reviewers.find_each do |reviewer|
+      unless all_reviewers.include?(reviewer.login)
+        reviewer.destroy!
+      end
+    end
+
     unless options[:skip_review_rules]
       ApplyReviewRules.new(pr, pull_request).perform
     end

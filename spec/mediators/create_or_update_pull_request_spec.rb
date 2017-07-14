@@ -56,5 +56,45 @@ RSpec.describe CreateOrUpdatePullRequest, type: :model do
           }
       end
     end
+
+    context "synchronizing the peer review list" do
+      let(:pull_request) { FactoryGirl.create :pull_request, number: 9876 }
+      let(:reviewers) { FactoryGirl.create_list :reviewer, 3, pull_request: pull_request }
+
+      let(:body) do
+        <<~BODY
+          - [ ] @#{reviewers[0].login}
+          - [ ] @#{reviewers[2].login}
+        BODY
+      end
+
+      before do
+        pull_request.update!(repository: repo_full_name)
+
+        allow(ApplyReviewRules).to receive(:new).and_return(double(perform: true))
+
+        stub_request(:get, %r{https://api.github.com/repos/baxterthehacker/public-repo/collaborators/.*})
+          .to_return(status: 204, body: "", headers: {})
+
+        pr_9876 = json_fixture("pr")
+        pr_9876["number"] = 9876
+        pr_9876["head"]["sha"] = head_sha
+        stub_request(:get, "https://api.github.com/repos/baxterthehacker/public-repo/pulls/9876").to_return(
+          status: 200,
+          body: pr_9876.to_json,
+          headers: { 'Content-Type' => 'application/json' }
+        )
+
+        stub_request(:post, %r{https://api.github.com/repos/baxterthehacker/public-repo/statuses/.*})
+          .to_return(status: 200, body: "", headers: {})
+        stub_request(:patch, "https://api.github.com/repos/baxterthehacker/public-repo/issues/9876")
+          .to_return(status: 200, body: "", headers: {})
+      end
+
+      it "removes reviewers who were deleted manually" do
+        CreateOrUpdatePullRequest.new.perform(payload)
+        expect(pull_request.reviewers.map(&:login)).not_to include(reviewers[1].login)
+      end
+    end
   end
 end
