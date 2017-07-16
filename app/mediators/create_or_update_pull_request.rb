@@ -23,6 +23,7 @@ class CreateOrUpdatePullRequest
     end
 
     prelude, _ = body.split(ReviewRule::GENERATED_REVIEWERS_REGEX, 2)
+    prelude ||= ""
 
     # Collect reviewers listed in the PR prelude.
     check_box_pairs = prelude.scan(PullRequest::REVIEWER_CHECKBOX_REGEX)
