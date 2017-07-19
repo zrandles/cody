@@ -4,12 +4,12 @@ class ReceivePullRequestEvent
   def perform(payload)
     @payload = payload
 
-    # Raven.user_context(
-    #   username: @payload["sender"]["login"]
-    # )
-    # Raven.tags_context(
-    #   event: "pull_request"
-    # )
+    Raven.user_context(
+      username: @payload["sender"]["login"]
+    )
+    Raven.tags_context(
+      event: "pull_request"
+    )
 
     case @payload["action"]
     when "opened"

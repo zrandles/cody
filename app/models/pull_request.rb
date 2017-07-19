@@ -16,6 +16,8 @@ class PullRequest < ApplicationRecord
   belongs_to :parent_pull_request, required: false, class_name: "PullRequest"
   has_many :reviewers
 
+  has_paper_trail
+
   REVIEW_LINK_REGEX = /(?:R|r)eview(?:ed)?\s+in\s+#(\d+)/
   REVIEWER_CHECKBOX_REGEX = /[*-] +\[([ x])\] +@([A-Za-z0-9_-]+)/
 
