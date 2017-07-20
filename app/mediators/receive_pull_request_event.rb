@@ -8,14 +8,17 @@ class ReceivePullRequestEvent
       username: @payload["sender"]["login"]
     )
     Raven.tags_context(
-      event: "pull_request"
+      event: "pull_request",
+      repo: @payload["repository"]["full_name"]
     )
 
-    case @payload["action"]
-    when "opened"
-      self.on_opened
-    when "synchronize"
-      self.on_synchronize
+    PaperTrail.whodunnit(@payload["sender"]["login"]) do
+      case @payload["action"]
+      when "opened"
+        self.on_opened
+      when "synchronize"
+        self.on_synchronize
+      end
     end
   end
 

@@ -4,20 +4,24 @@ class ReceiveIssueCommentEvent
   def perform(payload)
     @payload = payload
 
-    # Raven.user_context(
-    #   username: @payload["sender"]["login"]
-    # )
-    # Raven.tags_context(
-    #   event: "issue_comment"
-    # )
+    Raven.user_context(
+      username: @payload["sender"]["login"]
+    )
+    Raven.tags_context(
+      event: "pull_request",
+      repo: @payload["repository"]["full_name"]
+    )
 
     comment = @payload["comment"]["body"]
-    if comment_affirmative?(comment)
-      self.approval_comment
-    elsif comment_rebuild_reviews?(comment)
-      self.rebuild_reviews
-    elsif directives = comment_replace?(comment)
-      replace_reviewer(directives)
+
+    PaperTrail.whodunnit(@payload["sender"]["login"]) do
+      if comment_affirmative?(comment)
+        self.approval_comment
+      elsif comment_rebuild_reviews?(comment)
+        self.rebuild_reviews
+      elsif directives = comment_replace?(comment)
+        replace_reviewer(directives)
+      end
     end
   end
 
