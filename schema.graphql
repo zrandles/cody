@@ -154,6 +154,7 @@ type ReviewerEdge {
 
 type ReviewerVersion {
   login: [String]
+  status: [String]
 }
 
 type User implements Node {
