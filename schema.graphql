@@ -131,6 +131,7 @@ type Reviewer implements Node {
   # The Review Rule that added this Reviewer
   reviewRule: ReviewRule
   status: String!
+  versions: [ReviewerVersion]
 }
 
 # The connection type for Reviewer.
@@ -149,6 +150,11 @@ type ReviewerEdge {
 
   # The item at the end of the edge.
   node: Reviewer
+}
+
+type ReviewerVersion {
+  login: [String]
+  status: [String]
 }
 
 type User implements Node {

@@ -15,4 +15,25 @@ Types::ReviewerType = GraphQL::ObjectType.define do
       reviewer.review_rule
     }
   end
+
+  VersionType = GraphQL::ObjectType.define do
+    name "ReviewerVersion"
+
+    field :login, function: Functions::HashField.new(
+      "login",
+      types[types.String]
+    )
+
+    field :status, function: Functions::HashField.new(
+      "status",
+      types[types.String]
+    )
+  end
+
+  field :versions do
+    type types[VersionType]
+    resolve -> (reviewer, args, ctx) {
+      reviewer.versions.map(&:changeset)
+    }
+  end
 end

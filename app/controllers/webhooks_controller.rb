@@ -30,9 +30,7 @@ class WebhooksController < ApplicationController
     end
 
     if body["action"] == "opened" || body["action"] == "synchronize"
-      ReceivePullRequestEvent.perform_async(
-        body.slice("action", "number", "pull_request", "repository")
-      )
+      ReceivePullRequestEvent.perform_async(body)
     end
 
     head :accepted

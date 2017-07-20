@@ -11,6 +11,8 @@ class Reviewer < ApplicationRecord
   scope :pending_review, -> { where(status: STATUS_PENDING_APPROVAL) }
   scope :completed_review, -> { where(status: STATUS_APPROVED) }
 
+  has_paper_trail
+
   def addendum
     <<~EOF
       ### #{self.name_with_code}
