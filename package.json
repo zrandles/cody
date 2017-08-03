@@ -55,6 +55,7 @@
     "prettier-eslint": "^6.4.2",
     "react-hot-loader": "next",
     "relay-compiler": "^1.1.0",
+    "remark-preset-lint-recommended": "^3.0.0",
     "webpack-dev-server": "^2.5.0"
   }
 }

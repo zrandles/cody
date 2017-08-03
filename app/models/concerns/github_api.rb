@@ -21,15 +21,7 @@ module GithubApi
   end
 
   def make_jwt_token
-    aws = Aws::S3::Client.new(
-      access_key_id: Rails.application.secrets.aws_access_key_id,
-      secret_access_key: Rails.application.secrets.aws_secret_access_key
-    )
-    response = aws.get_object(
-      bucket_name: ENV["PEM_BUCKET"],
-      key: ENV["INTEGRATION_PEM"]
-    )
-    private_key = response.body.read
+    private_key = integration_private_key
 
     payload = {
       iat: Time.now.to_i,
@@ -38,5 +30,21 @@ module GithubApi
     }
 
     JWT.encode(payload, private_key, "RS256")
+  end
+
+  # Read the integration's private key from the environment.
+  #
+  # If CODY_GITHUB_INTEGRATION_PRIVATE_KEY is specified, this variable is
+  # assumed to contain the contents of the .pem file and is used as is.
+  #
+  # If CODY_GITHUB_INTEGRATION_PRIVATE_KEY_PATH is specified, this variable is
+  # assumed to contain the path to the .pem file. Relative paths are expanded
+  # relative to Rails.root.
+  def integration_private_key
+    ENV["CODY_GITHUB_INTEGRATION_PRIVATE_KEY"].presence ||
+      File.read(
+        Rails.root.join(ENV["CODY_GITHUB_INTEGRATION_PRIVATE_KEY_PATH"])
+          .expand_path
+      )
   end
 end

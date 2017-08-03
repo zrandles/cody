@@ -17,3 +17,6 @@
 site/
 /public/packs
 /node_modules
+
+# Ignore private keys
+*.pem
