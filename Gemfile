@@ -106,3 +106,5 @@ group :production do
 end
 
 gem 'graphiql-rails', group: :development
+
+gem 'tzinfo-data'
