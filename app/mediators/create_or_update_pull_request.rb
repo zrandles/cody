@@ -139,5 +139,6 @@ class CreateOrUpdatePullRequest
 
     pr.update_status
     pr.assign_reviewers
+    pr
   end
 end

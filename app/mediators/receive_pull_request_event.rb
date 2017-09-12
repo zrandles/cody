@@ -23,7 +23,8 @@ class ReceivePullRequestEvent
   end
 
   def on_opened
-    CreateOrUpdatePullRequest.new.perform(@payload["pull_request"])
+    pull_request = CreateOrUpdatePullRequest.new.perform(@payload["pull_request"])
+    pull_request&.add_watchers
   end
 
   # The "synchronize" event occurs whenever a new commit is pushed to the branch

@@ -136,6 +136,11 @@ class PullRequest < ApplicationRecord
     )
   end
 
+  # Modifies local copy of PR body. Leave the push back to github to update_body
+  def add_watchers
+    resource["body"] << WatcherRule.watcher_text(self, resource)
+  end
+
   private
 
   def update_child_pull_requests
